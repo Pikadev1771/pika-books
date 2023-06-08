@@ -1,7 +1,13 @@
 import styled from 'styled-components';
+import Header from '../components/Header';
 
 const Main = () => {
-  return <Wrapper>야호</Wrapper>;
+  return (
+    <>
+      <Header />
+      <Wrapper>야호</Wrapper>
+    </>
+  );
 };
 
 const Wrapper = styled.div`
