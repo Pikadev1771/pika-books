@@ -1,12 +1,14 @@
 import styled from 'styled-components';
-
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import TextField from '@mui/material/TextField';
+import useLogin from 'hooks/useLogin';
+import { authService } from 'booksFirebase';
+import { signOut } from 'firebase/auth';
 
 export default function Header() {
+  const [init, isLoggedIn] = useLogin();
+  console.log(isLoggedIn);
   const navigate = useNavigate();
-  const isLogin = true;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModalHandler = () => {
@@ -14,12 +16,13 @@ export default function Header() {
   };
 
   const handleLogOut = () => {
-    console.log('로그아웃!');
+    signOut(authService);
+    setIsModalOpen(false);
   };
 
-  const handleClickModalMenu = () => {
+  const handleGoMyPage = () => {
     navigate('/mypage');
-    setIsModalOpen(!isModalOpen);
+    setIsModalOpen(false);
   };
 
   return (
@@ -32,30 +35,39 @@ export default function Header() {
           variant="standard"
           placeholder="책 제목, 저자명으로 검색해보세요"
         />
-        {isLogin ? (
+        {init && (
           <>
-            <Link to={'/cart'}>
-              <MenuButton>
-                <img src="/header/cart.svg" width="40" height="40" alt="cart" />
-              </MenuButton>
-            </Link>
-            <MenuButton onClick={openModalHandler}>
-              <img
-                src="/header/mypage.svg"
-                width="40"
-                height="40"
-                alt="mypage"
-              />
-            </MenuButton>
+            {isLoggedIn ? (
+              <>
+                <Link to={'/cart'}>
+                  <MenuButton>
+                    <img
+                      src="/header/cart.svg"
+                      width="40"
+                      height="40"
+                      alt="cart"
+                    />
+                  </MenuButton>
+                </Link>
+                <MenuButton onClick={openModalHandler}>
+                  <img
+                    src="/header/mypage.svg"
+                    width="40"
+                    height="40"
+                    alt="mypage"
+                  />
+                </MenuButton>
+              </>
+            ) : (
+              <LoginBtn onClick={() => navigate('/login')}>로그인</LoginBtn>
+            )}
           </>
-        ) : (
-          <LoginBtn>로그인</LoginBtn>
         )}
       </SearchAndMenu>
       {isModalOpen && <ModalBackdrop onClick={openModalHandler} />}
       {isModalOpen ? (
         <ModalBox onClick={(event) => event.stopPropagation()}>
-          <ModalMenu onClick={handleClickModalMenu}>마이 페이지</ModalMenu>{' '}
+          <ModalMenu onClick={handleGoMyPage}>마이 페이지</ModalMenu>
           <ModalMenu onClick={handleLogOut}>로그아웃</ModalMenu>
         </ModalBox>
       ) : null}
@@ -117,14 +129,13 @@ const Search = styled.input`
 `;
 
 const LoginBtn = styled.button`
-  width: 100px;
-  height: 50px;
-  padding: 10px;
+  width: 120px;
+  height: 60px;
 
   border: none;
   background-color: black;
   color: white;
-  border-radius: 10px;
+
   margin-left: 10px;
 
   font-size: 18px;

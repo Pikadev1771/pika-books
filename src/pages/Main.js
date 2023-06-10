@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Header from '../components/Header';
-import BookCard from '../components/bookCard';
+import Header from 'components/Header';
+import BookCard from 'components/bookCard';
 import { useSelector } from 'react-redux';
 
 const Main = () => {

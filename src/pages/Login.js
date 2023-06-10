@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { authService } from 'booksFirebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -40,11 +42,19 @@ const LoginPage = () => {
   };
 
   // 유효성 검사
-  const idRegex = /^(?=.*[a-z0-9가-힣])[a-z0-9가-힣]{2,16}$/;
+  const emailRegex = new RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
 
   // 로그인 요청
-  const onSubmit = (form) => {};
+  const onSubmit = async (form) => {
+    const { email, pw } = form;
+    try {
+      const res = await signInWithEmailAndPassword(authService, email, pw);
+      navigate('/');
+    } catch (error) {
+      setLoginErrorMessage('정확하지 않은 이메일 또는 패스워드입니다');
+    }
+  };
 
   return (
     <>
@@ -54,22 +64,22 @@ const LoginPage = () => {
             <img src="/logo/Logo.svg" width="500" height="120" alt="home" />
           </HomeBtnContainer>
           <InputSet>
-            <Label htmlFor="id">ID</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
-              id="id"
-              placeholder="아이디를 입력해주세요"
+              id="email"
+              placeholder="이메일을 입력해주세요"
               onKeyPress={handleIdKeyPress}
-              {...register('id', {
+              {...register('email', {
                 required: true,
-                pattern: idRegex,
+                pattern: emailRegex,
               })}
             />
-            {errors?.id?.type === 'required' && (
-              <HelpMessage>아이디를 입력해주세요</HelpMessage>
+            {errors?.email?.type === 'required' && (
+              <HelpMessage>이메일을 입력해주세요</HelpMessage>
             )}
 
-            {errors?.id?.type === 'pattern' && (
-              <HelpMessage>아이디 양식에 맞게 입력해주세요</HelpMessage>
+            {errors?.email?.type === 'pattern' && (
+              <HelpMessage>이메일 양식에 맞게 입력해주세요</HelpMessage>
             )}
           </InputSet>
           <InputSet>
@@ -234,7 +244,6 @@ const LogInBtn = styled.input`
   height: 70px;
   padding: 10px 0;
   margin: 10px;
-
 
   color: white;
   background-color: black;

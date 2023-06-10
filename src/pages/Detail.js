@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
-import Header from '../components/Header';
-import BookCard from '../components/bookCard';
+import Header from 'components/Header';
+import BookCard from 'components/bookCard';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { TextField } from '@mui/material';
@@ -28,12 +28,15 @@ const Detail = () => {
       <Header />
       <Wrapper>
         <Container>
-          <BookInfo>
-            <Title>{bookData.title}</Title>
-            <AuthorAndPublisher>{`${bookData.author} | ${bookData.publisher}`}</AuthorAndPublisher>
-          </BookInfo>
+          <BookInfoContainer>
+            <BookInfo>
+              <Title>{bookData.title}</Title>
+              <AuthorAndPublisher>{`${bookData.author} | ${bookData.publisher}`}</AuthorAndPublisher>
+            </BookInfo>
+            <EditBtn>책 정보 수정</EditBtn>
+          </BookInfoContainer>
           <ContentsContainer>
-            <BookImg src={bookData.img} width={400} height={600} />
+            <BookImg src={bookData.img} width={450} height={620} />
             <Contents>
               <Content>
                 <span>판매가</span>
@@ -68,7 +71,6 @@ const Wrapper = styled.div`
   margin: 60px auto;
   width: 80vw;
   padding: 50px;
-  /* background-color: #ffffff; */
 `;
 
 const Container = styled.div`
@@ -86,10 +88,16 @@ const Container = styled.div`
   }
 `;
 
-const BookInfo = styled.div`
+const BookInfoContainer = styled.div`
   width: 100%;
   height: 120px;
   border-bottom: 4px solid black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const BookInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -129,32 +137,27 @@ const AuthorAndPublisher = styled.div`
   }
 `;
 
-const ContentsContainer = styled.div`
-  ${({ theme }) => theme.flexCenter};
-  width: 100%;
+const EditBtn = styled.button`
+  border: 2px solid black;
+  padding: 14px;
+  font-size: 20px;
+  font-weight: 600;
+`;
 
-  /* border: 2px solid black; */
+const ContentsContainer = styled.div`
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30px;
+  padding: 40px 0;
 `;
 
 const BookImg = styled.img`
   border: 2px solid black;
 `;
 
-// const ContentsAndCart = styled.div`
-//   border: 2px solid black;
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: flex-end;
-// `;
-
 const Contents = styled.div`
-  /* border: 2px solid black; */
-  height: 600px;
+  height: 620px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

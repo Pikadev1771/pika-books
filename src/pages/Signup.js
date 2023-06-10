@@ -2,11 +2,13 @@ import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authService } from 'booksFirebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 const SignupPage = () => {
   const navigate = useNavigate();
 
-  const [loginErrorMessage, setLoginErrorMessage] = useState();
+  const [signupErrorMessage, setSignupErrorMessage] = useState();
 
   // react-hook-form
   const {
@@ -37,11 +39,24 @@ const SignupPage = () => {
   };
 
   // 유효성 검사
-  const idAndNameRegex = /^(?=.*[a-z0-9가-힣])[a-z0-9가-힣]{2,16}$/;
+  const emailRegex = new RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
+  const nicknameRegex = /^(?=.*[a-z0-9가-힣])[a-z0-9가-힣]{2,16}$/;
 
   // 회원가입 요청
-  const onSubmit = (form) => {};
+  const onSubmit = async (form) => {
+    console.log(form);
+    const { email, pw, nickname } = form;
+    try {
+      const res = await createUserWithEmailAndPassword(authService, email, pw);
+      await updateProfile(authService.currentUser, { displayName: nickname });
+      navigate('/');
+    } catch (error) {
+      if (error.code === `auth/email-already-in-use`) {
+        setSignupErrorMessage('이미 존재하는 이메일입니다');
+      }
+    }
+  };
 
   return (
     <>
@@ -52,22 +67,22 @@ const SignupPage = () => {
           </HomeBtnContainer>
           <InputSet>
             <Label htmlFor="id">
-              ID<Required>*</Required>
+              Email<Required>*</Required>
             </Label>
             <Input
-              id="id"
-              placeholder="아이디를 입력해주세요"
+              id="email"
+              placeholder="이메일을 입력해주세요"
               onKeyPress={handleKeyPress}
-              {...register('id', {
+              {...register('email', {
                 required: true,
-                pattern: idAndNameRegex,
+                pattern: emailRegex,
               })}
             />
-            {errors?.id?.type === 'required' && (
-              <ErrorMessage>아이디를 입력해주세요</ErrorMessage>
+            {errors?.email?.type === 'required' && (
+              <ErrorMessage>이메일을 입력해주세요</ErrorMessage>
             )}
 
-            {errors?.id?.type === 'pattern' && (
+            {errors?.email?.type === 'pattern' && (
               <ErrorMessage>
                 2자 이상 16자 이하, 영어, 숫자 또는 한글로 구성되어야 합니다.
               </ErrorMessage>
@@ -159,23 +174,23 @@ const SignupPage = () => {
             )}
           </InputSet>
           <InputSet>
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="nickname">Nickname</Label>
             <Input
-              id="name"
-              placeholder="이름을 입력해 주세요"
+              id="nickname"
+              placeholder="닉네임을 입력해 주세요"
               onKeyPress={handleKeyPress}
-              {...register('name', {
-                pattern: idAndNameRegex,
+              {...register('nickname', {
+                pattern: nicknameRegex,
               })}
             />
-            {errors?.name?.type === 'pattern' && (
+            {errors?.nickname?.type === 'pattern' && (
               <ErrorMessage>
                 2자 이상 16자 이하, 영어, 숫자 또는 한글로 구성되어야 합니다.
               </ErrorMessage>
             )}
           </InputSet>
           <ButtonContainer>
-            <LoginErrorMessage>{loginErrorMessage}</LoginErrorMessage>
+            <SignupErrorMessage>{signupErrorMessage}</SignupErrorMessage>
             <LogInBtn type="submit" value={'Sign Up'} />
             <LinkContainer>
               이미 가입한 회원이신가요?
@@ -291,7 +306,7 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
-const LoginErrorMessage = styled.p`
+const SignupErrorMessage = styled.p`
   color: ${({ theme }) => theme.color.red};
   margin: 6px 0;
   font-weight: 400;
