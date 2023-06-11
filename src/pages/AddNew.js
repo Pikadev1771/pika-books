@@ -3,13 +3,19 @@ import styled from 'styled-components';
 import Header from 'components/Header';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import useUser from 'hooks/useUser';
+
 import { dbService } from 'booksFirebase';
 import { addDoc, collection } from 'firebase/firestore';
-import useUser from 'hooks/useUser';
+import { storageService } from 'booksFirebase';
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import { nanoid } from 'nanoid';
 
 const AddNew = () => {
   const navigate = useNavigate();
   const userObj = useUser();
+
+  const [imgUrl, setImgUrl] = useState(); // 이미지 URL (업로드 작업 할 동안 임시 사용 용도)
 
   // react-hook-form
   const {
@@ -25,8 +31,40 @@ const AddNew = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const imgFile = e.target.files[0];
+    const reader = new FileReader();
+
+    // event listner 추가
+    reader.onloadend = (finishedEvent) => {
+      console.log(finishedEvent);
+      setImgUrl(finishedEvent.currentTarget.result);
+    };
+    reader.readAsDataURL(imgFile);
+    console.log(imgFile);
+  };
+
   const onSubmit = async (form) => {
-    form = { ...form, createdAt: Date.now(), creatorId: userObj.uid };
+    if (imgUrl) {
+      const fileRef = ref(storageService, `${userObj.uid}/${nanoid()}`); // 이미지 파일 저장할 ref(폴더) 생성 (유저 id를 기준으로 폴더 생성)
+      const response = await uploadString(fileRef, imgUrl, 'data_url'); // 해당 폴더에 이미지(URL) 추가
+      const fileUrl = await getDownloadURL(response.ref); // 진짜 URL을 다운로드해서 변수에 저장
+
+      form = {
+        ...form,
+        bookImgUrl: fileUrl,
+        createdAt: Date.now(),
+        creatorId: userObj.uid,
+      };
+    } else {
+      form = {
+        ...form,
+        bookImgUrl: null,
+        createdAt: Date.now(),
+        creatorId: userObj.uid,
+      };
+    }
+
     await addDoc(collection(dbService, 'books'), form);
     console.log(form);
     navigate('/');
@@ -41,7 +79,15 @@ const AddNew = () => {
             <Title>도서 등록</Title>
           </PageTitle>
           <ContentsContainer>
-            <BookImg src={'/books/Book.png'} width={450} height={620} />
+            <ImgBox>
+              <BookImg src={imgUrl || '/books/Book.png'} />
+              <Upload
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </ImgBox>
+
             <Form onSubmit={handleSubmit(onSubmit)}>
               <InputSet>
                 <Label htmlFor="title">
@@ -165,8 +211,25 @@ const ContentsContainer = styled.div`
   padding: 40px 0;
 `;
 
+const ImgBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 const BookImg = styled.img`
   border: 2px solid black;
+  width: 450px;
+  height: 620px;
+`;
+
+const Upload = styled.input`
+  width: 250px;
+  height: 50px;
+  padding: 10px;
+  margin-top: 30px;
+  font-size: 20px;
 `;
 
 const Form = styled.form`

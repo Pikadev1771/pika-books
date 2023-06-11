@@ -4,11 +4,12 @@ import styled from 'styled-components';
 import { css } from 'styled-components';
 
 export default function BookCard({ book }) {
-  const { id, title, author, publisher, img, price } = book;
+  const { id, title, author, publisher, bookImgUrl, price } = book;
   return (
     <Link to={`/book/${id}`}>
       <CardContainer>
-        <BookImg src={img || '/books/Book.png'} width={220} height={300} />
+        <BookImg src={`${bookImgUrl || '/books/Book.png'}`} />
+
         <Text>
           <Title>{title}</Title>
           <AuthorAndPublisher>{`${author} / ${publisher}`}</AuthorAndPublisher>
@@ -24,11 +25,15 @@ const CardContainer = styled.button`
   width: 530px;
   background-color: inherit;
   margin: 30px;
-  border: 2px solid black;
-  padding: 30px;
+  border: 4px solid black;
+  padding: 40px;
 `;
 
-const BookImg = styled.img``;
+const BookImg = styled.img`
+  border: 2px solid black;
+  width: 210px;
+  height: 280px;
+`;
 
 const Text = styled.div`
   width: 250px;

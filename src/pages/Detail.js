@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom';
 import { TextField } from '@mui/material';
 import { dbService } from 'booksFirebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { storageService } from 'booksFirebase';
+import { deleteObject, ref } from 'firebase/storage';
 import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 
@@ -37,13 +39,24 @@ const Detail = () => {
     }
   };
 
+  console.log('bookData', bookData);
+
   useEffect(() => {
     getBookData();
   }, []);
 
   const handleDelete = async () => {
+    // firestore 문서 지우기
     const bookRef = doc(dbService, 'books', params.id);
     await deleteDoc(bookRef);
+
+    // storage 문서 지우기
+    if (bookData.bookImgUrl) {
+      const bookImgUrlRef = ref(storageService, bookData.bookImgUrl);
+      console.log(bookImgUrlRef);
+      await deleteObject(bookImgUrlRef);
+    }
+
     navigate('/');
   };
 
@@ -72,7 +85,11 @@ const Detail = () => {
               )}
             </BookInfoContainer>
             <ContentsContainer>
-              <BookImg src={'/books/Book.png'} width={450} height={620} />
+              <BookImg
+                src={`${bookData.bookImgUrl || '/books/Book.png'}`}
+                width={450}
+                height={620}
+              />
               <Contents>
                 <Content>
                   <span>판매가</span>
