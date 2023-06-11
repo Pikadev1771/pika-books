@@ -3,12 +3,44 @@ import styled from 'styled-components';
 import Header from 'components/Header';
 import BookCard from 'components/bookCard';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { dbService } from 'booksFirebase';
+import {
+  getDocs, // temp
+  collection,
+  query,
+  onSnapshot,
+  orderBy,
+} from 'firebase/firestore';
 
 const Main = () => {
-  const bookList = useSelector((state) => state.bookReducer.books);
+  const navigate = useNavigate();
+  // const bookList = useSelector((state) => state.bookReducer.books);
+
+  const [bookList, setBookList] = useState([]);
+
+  // const getBookList = async () => {
+  //   const querySnapshot = await getDocs(collection(dbService, 'books'));
+  //   console.log(querySnapshot);
+  //   querySnapshot.forEach((doc) => {
+  //     const booksObj = { ...doc.data(), id: doc.id };
+  //     setBookList((prev) => [...prev, booksObj]);
+  //   });
+  // };
+
+  useEffect(() => {
+    // getBookList();
+    const q = query(collection(dbService, 'books'), orderBy('createdAt'));
+    onSnapshot(q, (snapshot) => {
+      const bookArr = snapshot.docs.map((book) => ({
+        id: book.id,
+        ...book.data(),
+      }));
+      setBookList(bookArr);
+    });
+  }, []);
 
   console.log(bookList);
-
   return (
     <>
       <Header />
@@ -16,21 +48,11 @@ const Main = () => {
         <Container>
           <PageTitle>
             <Title>도서 목록</Title>
-            <AddBtn>▶ 책 등록하기</AddBtn>
+            <AddBtn onClick={() => navigate('/addnew')}>▶ 책 등록하기</AddBtn>
           </PageTitle>
           <List>
             {bookList?.map((book) => {
-              return (
-                <BookCard
-                  key={book.id}
-                  id={book.id}
-                  title={book.title}
-                  author={book.author}
-                  publisher={book.publisher}
-                  img={book.img}
-                  price={book.price}
-                />
-              );
+              return <BookCard key={book.id} book={book} />;
             })}
           </List>
         </Container>

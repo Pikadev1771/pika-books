@@ -5,19 +5,47 @@ import BookCard from 'components/bookCard';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { TextField } from '@mui/material';
+import { dbService } from 'booksFirebase';
+import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import useUser from 'hooks/useUser';
+import { useNavigate } from 'react-router-dom';
 
 const Detail = () => {
+  const navigate = useNavigate();
   const params = useParams();
+  const userObj = useUser();
 
+  const [bookData, setBookData] = useState();
   const [quantity, setQuantity] = useState(1);
 
-  console.log(quantity);
+  const isCreator = userObj && bookData && userObj.uid === bookData.creatorId;
 
-  const bookData = useSelector((state) => state.bookReducer.books).filter(
-    (book) => book.id === params.id
-  )[0];
+  // const bookData = useSelector((state) => state.bookReducer.books).filter(
+  //   (book) => book.id === params.id
+  // )[0];
 
-  console.log(bookData);
+  const getBookData = async () => {
+    const docRef = doc(dbService, 'books', params.id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log('docSnap', docSnap.data());
+      const book = { ...docSnap.data(), id: params.id };
+      setBookData(book);
+    } else {
+      console.log('No such document!');
+    }
+  };
+
+  useEffect(() => {
+    getBookData();
+  }, []);
+
+  const handleDelete = async () => {
+    const bookRef = doc(dbService, 'books', params.id);
+    await deleteDoc(bookRef);
+    navigate('/');
+  };
 
   const handleChangeQuantity = useCallback((e) => {
     setQuantity(Number(e.target.value));
@@ -26,41 +54,50 @@ const Detail = () => {
   return (
     <>
       <Header />
-      <Wrapper>
-        <Container>
-          <BookInfoContainer>
-            <BookInfo>
-              <Title>{bookData.title}</Title>
-              <AuthorAndPublisher>{`${bookData.author} | ${bookData.publisher}`}</AuthorAndPublisher>
-            </BookInfo>
-            <EditBtn>책 정보 수정</EditBtn>
-          </BookInfoContainer>
-          <ContentsContainer>
-            <BookImg src={bookData.img} width={450} height={620} />
-            <Contents>
-              <Content>
-                <span>판매가</span>
-                <span>{`${bookData.price}원`}</span>
-              </Content>
-              <Content>
-                <span>배송료</span>
-                <span>무료</span>
-              </Content>
-              <Content>
-                <span>수량</span>
-                <Quantity
-                  type="number"
-                  value={quantity}
-                  onChange={handleChangeQuantity}
-                ></Quantity>
-              </Content>
-              <CartContainer>
-                <CartBtn>장바구니</CartBtn>
-              </CartContainer>
-            </Contents>
-          </ContentsContainer>
-        </Container>
-      </Wrapper>
+      {bookData && (
+        <Wrapper>
+          <Container>
+            <BookInfoContainer>
+              <BookInfo>
+                <Title>{bookData.title}</Title>
+                <AuthorAndPublisher>{`${bookData.author} | ${bookData.publisher}`}</AuthorAndPublisher>
+              </BookInfo>
+              {isCreator && (
+                <Menu>
+                  <MenuBtn onClick={() => navigate(`/edit/${bookData.id}`)}>
+                    수정
+                  </MenuBtn>
+                  <MenuBtn onClick={handleDelete}>삭제</MenuBtn>
+                </Menu>
+              )}
+            </BookInfoContainer>
+            <ContentsContainer>
+              <BookImg src={'/books/Book.png'} width={450} height={620} />
+              <Contents>
+                <Content>
+                  <span>판매가</span>
+                  <span>{`${bookData.price}원`}</span>
+                </Content>
+                <Content>
+                  <span>배송료</span>
+                  <span>무료</span>
+                </Content>
+                <Content>
+                  <span>수량</span>
+                  <Quantity
+                    type="number"
+                    value={quantity}
+                    onChange={handleChangeQuantity}
+                  ></Quantity>
+                </Content>
+                <CartContainer>
+                  <CartBtn>장바구니</CartBtn>
+                </CartContainer>
+              </Contents>
+            </ContentsContainer>
+          </Container>
+        </Wrapper>
+      )}
     </>
   );
 };
@@ -113,7 +150,6 @@ const Title = styled.span`
   margin: 10px 0;
   font-size: 38px;
   font-weight: 600;
-  color: ${({ theme }) => theme.color.hotPink};
   display: flex;
 `;
 
@@ -137,8 +173,16 @@ const AuthorAndPublisher = styled.div`
   }
 `;
 
-const EditBtn = styled.button`
+const Menu = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const MenuBtn = styled.button`
   border: 2px solid black;
+  width: 100px;
+  margin-left: 10px;
   padding: 14px;
   font-size: 20px;
   font-weight: 600;

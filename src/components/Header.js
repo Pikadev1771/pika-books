@@ -1,13 +1,15 @@
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import useLogin from 'hooks/useLogin';
 import { authService } from 'booksFirebase';
 import { signOut } from 'firebase/auth';
+import useLogin from 'hooks/useLogin';
+import useUser from 'hooks/useUser';
 
 export default function Header() {
   const [init, isLoggedIn] = useLogin();
-  console.log(isLoggedIn);
+  const userObj = useUser();
+
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);

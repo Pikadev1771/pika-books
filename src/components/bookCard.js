@@ -1,13 +1,14 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { css } from 'styled-components';
 
-export default function BookCard({ id, title, author, publisher, img, price }) {
+export default function BookCard({ book }) {
+  const { id, title, author, publisher, img, price } = book;
   return (
     <Link to={`/book/${id}`}>
       <CardContainer>
-        <BookImg src={img} width={200} height={300} />
+        <BookImg src={img || '/books/Book.png'} width={220} height={300} />
         <Text>
           <Title>{title}</Title>
           <AuthorAndPublisher>{`${author} / ${publisher}`}</AuthorAndPublisher>
@@ -119,14 +120,4 @@ const Price = styled.div`
     font-size: 12px;
     -webkit-line-clamp: 2;
   }
-`;
-
-const CartBtn = styled.button`
-  color: white;
-  background-color: black;
-  border: none;
-  margin-top: 10px;
-  padding: 14px;
-  font-size: 20px;
-  font-weight: 600;
 `;
