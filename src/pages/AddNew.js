@@ -66,7 +66,6 @@ const AddNew = () => {
     }
 
     await addDoc(collection(dbService, 'books'), form);
-    console.log(form);
     navigate('/');
   };
 

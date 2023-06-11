@@ -7,6 +7,7 @@ import LoginPage from 'pages/Login';
 import SignupPage from 'pages/Signup';
 import AddNew from 'pages/AddNew';
 import Edit from 'pages/Edit';
+import Cart from 'pages/Cart';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/book/:id" element={<Detail />} />
           <Route path="/addnew" element={<AddNew />} />
           <Route path="/edit/:id" element={<Edit />} />
+          <Route path="cart" element={<Cart />} />
         </Routes>
       </BrowserRouter>
     </Provider>

@@ -31,7 +31,7 @@ const Detail = () => {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log('docSnap', docSnap.data());
+
       const book = { ...docSnap.data(), id: params.id };
       setBookData(book);
     } else {
@@ -39,7 +39,7 @@ const Detail = () => {
     }
   };
 
-  console.log('bookData', bookData);
+
 
   useEffect(() => {
     getBookData();
@@ -53,7 +53,6 @@ const Detail = () => {
     // storage 문서 지우기
     if (bookData.bookImgUrl) {
       const bookImgUrlRef = ref(storageService, bookData.bookImgUrl);
-      console.log(bookImgUrlRef);
       await deleteObject(bookImgUrlRef);
     }
 

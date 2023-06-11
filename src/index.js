@@ -5,8 +5,7 @@ import { GlobalStyle } from 'styles/global-styles';
 import { theme } from 'styles/theme';
 import { ThemeProvider } from 'styled-components';
 import { StyledEngineProvider } from '@mui/styled-engine';
-// import { firebase } from './booksFirebase';
-// console.log(firebase);
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

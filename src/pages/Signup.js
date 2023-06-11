@@ -45,7 +45,6 @@ const SignupPage = () => {
 
   // 회원가입 요청
   const onSubmit = async (form) => {
-    console.log(form);
     const { email, pw, nickname } = form;
     try {
       const res = await createUserWithEmailAndPassword(authService, email, pw);

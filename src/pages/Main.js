@@ -19,15 +19,6 @@ const Main = () => {
 
   const [bookList, setBookList] = useState([]);
 
-  // const getBookList = async () => {
-  //   const querySnapshot = await getDocs(collection(dbService, 'books'));
-  //   console.log(querySnapshot);
-  //   querySnapshot.forEach((doc) => {
-  //     const booksObj = { ...doc.data(), id: doc.id };
-  //     setBookList((prev) => [...prev, booksObj]);
-  //   });
-  // };
-
   useEffect(() => {
     // getBookList();
     const q = query(collection(dbService, 'books'), orderBy('createdAt'));
@@ -40,7 +31,6 @@ const Main = () => {
     });
   }, []);
 
-  console.log(bookList);
   return (
     <>
       <Header />
