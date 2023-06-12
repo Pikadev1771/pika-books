@@ -22,7 +22,6 @@ const Cart = () => {
 
   // 선택된 아이템 ID 모음 (초기값은 전체 선택 상태)
   const [checkedItemIds, setCheckedItemIds] = useState(cartItemIds);
-
   // 도서 목록
   const [bookList, setBookList] = useState([]);
 

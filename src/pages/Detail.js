@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { useDispatch, useSelector } from 'react-redux';
-import { ADD_TO_CART } from 'store/slice/cartSlice';
+import { ADD_TO_CART, REMOVE_FROM_CART } from 'store/slice/cartSlice';
 import { useParams } from 'react-router-dom';
 import { dbService } from 'booksFirebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
@@ -48,6 +48,8 @@ const Detail = () => {
       const bookImgUrlRef = ref(storageService, bookData.bookImgUrl);
       await deleteObject(bookImgUrlRef);
     }
+
+    dispatch(REMOVE_FROM_CART({ id: params.id }));
 
     navigate('/');
   };
