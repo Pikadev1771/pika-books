@@ -13,7 +13,7 @@ export default function BookCard({ book }) {
         <Text>
           <Title>{title}</Title>
           <AuthorAndPublisher>{`${author} / ${publisher}`}</AuthorAndPublisher>
-          <Price>{`${price}원`}</Price>
+          <Price>{`${price.toLocaleString()}원`}</Price>
         </Text>
       </CardContainer>
     </Link>

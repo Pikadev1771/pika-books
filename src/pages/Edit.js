@@ -8,12 +8,17 @@ import { addDoc, collection } from 'firebase/firestore';
 import useUser from 'hooks/useUser';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { storageService } from 'booksFirebase';
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import { nanoid } from 'nanoid';
+import moment from 'moment';
 
 const Edit = () => {
   const navigate = useNavigate();
-  const params = useParams();
   const userObj = useUser();
+  const params = useParams();
 
+  const [imgUrl, setImgUrl] = useState();
   const [bookData, setBookData] = useState();
 
   const getBookData = async () => {
@@ -46,17 +51,47 @@ const Edit = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const imgFile = e.target.files[0];
+    const reader = new FileReader();
+
+    // event listner 추가
+    reader.onloadend = (finishedEvent) => {
+      console.log(finishedEvent);
+      setImgUrl(finishedEvent.currentTarget.result);
+    };
+    reader.readAsDataURL(imgFile);
+    console.log(imgFile);
+  };
+
   const onSubmit = async (form) => {
+    // form 초기값('') 수정
     for (let prop in form) {
-      !form[prop].length && (form[prop] = bookData[prop]);
+      if (!form[prop].length) {
+        form[prop] = bookData[prop];
+      }
     }
 
-    form = {
-      ...form,
-      createdAt: bookData.createdAt,
-      editedAt: Date.now(),
-      creatorId: userObj.uid,
-    };
+    if (imgUrl) {
+      const fileRef = ref(storageService, `${userObj.uid}/${nanoid()}`); // 이미지 파일 저장할 ref(폴더) 생성 (유저 id를 기준으로 폴더 생성)
+      const response = await uploadString(fileRef, imgUrl, 'data_url'); // 해당 폴더에 이미지(URL) 추가
+      const fileUrl = await getDownloadURL(response.ref); // 진짜 URL을 다운로드해서 변수에 저장
+
+      form = {
+        ...form,
+        bookImgUrl: fileUrl,
+        editedAt: moment(new Date()).format(),
+        price: Number(form.price),
+      };
+    } else {
+      form = {
+        ...form,
+        editedAt: moment(new Date()).format(),
+
+        price: Number(form.price),
+      };
+    }
+
     const bookRef = doc(dbService, 'books', params.id);
     await updateDoc(bookRef, form);
     navigate('/');
@@ -67,73 +102,86 @@ const Edit = () => {
       <Header />
       <Wrapper>
         <Container>
-          <PageTitle>
-            <Title>도서 정보 수정</Title>
-          </PageTitle>
-          <ContentsContainer>
-            <BookImg src={'/books/Book.png'} width={450} height={620} />
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <InputSet>
-                <Label htmlFor="title">
-                  제목<Required>*</Required>
-                </Label>
-                <Input
-                  id="title"
-                  onKeyPress={handleKeyPress}
-                  defaultValue={bookData?.title}
-                  {...register('title')}
-                />
-                {errors?.title?.type === 'required' && (
-                  <ErrorMessage>제목을 입력해주세요</ErrorMessage>
-                )}
-              </InputSet>
-              <InputSet>
-                <Label htmlFor="author">
-                  저자<Required>*</Required>
-                </Label>
-                <Input
-                  id="author"
-                  onKeyPress={handleKeyPress}
-                  defaultValue={bookData?.author}
-                  {...register('author')}
-                />
-                {errors?.author?.type === 'required' && (
-                  <ErrorMessage>저자를 입력해주세요</ErrorMessage>
-                )}
-              </InputSet>
-              <InputSet>
-                <Label htmlFor="publisher">
-                  출판사<Required>*</Required>
-                </Label>
-                <Input
-                  id="publisher"
-                  onKeyPress={handleKeyPress}
-                  defaultValue={bookData?.publisher}
-                  {...register('publisher')}
-                />
-                {errors?.publisher?.type === 'required' && (
-                  <ErrorMessage>출판사를 입력해주세요</ErrorMessage>
-                )}
-              </InputSet>
+          {bookData && (
+            <>
+              <PageTitle>
+                <Title>도서 정보 수정</Title>
+              </PageTitle>
+              <ContentsContainer>
+                <ImgBox>
+                  <BookImg
+                    src={imgUrl || bookData?.bookImgUrl || '/books/Book.png'}
+                  />
+                  <Upload
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                </ImgBox>
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                  <InputSet>
+                    <Label htmlFor="title">
+                      제목<Required>*</Required>
+                    </Label>
+                    <Input
+                      id="title"
+                      onKeyPress={handleKeyPress}
+                      defaultValue={bookData?.title}
+                      {...register('title')}
+                    />
+                    {errors?.title?.type === 'required' && (
+                      <ErrorMessage>제목을 입력해주세요</ErrorMessage>
+                    )}
+                  </InputSet>
+                  <InputSet>
+                    <Label htmlFor="author">
+                      저자<Required>*</Required>
+                    </Label>
+                    <Input
+                      id="author"
+                      onKeyPress={handleKeyPress}
+                      defaultValue={bookData?.author}
+                      {...register('author')}
+                    />
+                    {errors?.author?.type === 'required' && (
+                      <ErrorMessage>저자를 입력해주세요</ErrorMessage>
+                    )}
+                  </InputSet>
+                  <InputSet>
+                    <Label htmlFor="publisher">
+                      출판사<Required>*</Required>
+                    </Label>
+                    <Input
+                      id="publisher"
+                      onKeyPress={handleKeyPress}
+                      defaultValue={bookData?.publisher}
+                      {...register('publisher')}
+                    />
+                    {errors?.publisher?.type === 'required' && (
+                      <ErrorMessage>출판사를 입력해주세요</ErrorMessage>
+                    )}
+                  </InputSet>
 
-              <InputSet>
-                <Label htmlFor="price">
-                  판매가<Required>*</Required>
-                </Label>
-                <Input
-                  id="price"
-                  onKeyPress={handleKeyPress}
-                  defaultValue={bookData?.price}
-                  {...register('price')}
-                />
-                {errors?.price?.type === 'required' && (
-                  <ErrorMessage>판매 가격을 입력해주세요</ErrorMessage>
-                )}
-              </InputSet>
+                  <InputSet>
+                    <Label htmlFor="price">
+                      판매가<Required>*</Required>
+                    </Label>
+                    <Input
+                      id="price"
+                      onKeyPress={handleKeyPress}
+                      defaultValue={bookData?.price}
+                      {...register('price')}
+                    />
+                    {errors?.price?.type === 'required' && (
+                      <ErrorMessage>판매 가격을 입력해주세요</ErrorMessage>
+                    )}
+                  </InputSet>
 
-              <SubmitBtn type="submit">수정</SubmitBtn>
-            </Form>
-          </ContentsContainer>
+                  <SubmitBtn type="submit">수정</SubmitBtn>
+                </Form>
+              </ContentsContainer>
+            </>
+          )}
         </Container>
       </Wrapper>
     </>
@@ -191,8 +239,25 @@ const ContentsContainer = styled.div`
   padding: 40px 0;
 `;
 
+const ImgBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 const BookImg = styled.img`
   border: 2px solid black;
+  width: 450px;
+  height: 620px;
+`;
+
+const Upload = styled.input`
+  width: 250px;
+  height: 50px;
+  padding: 10px;
+  margin-top: 30px;
+  font-size: 20px;
 `;
 
 const Form = styled.form`

@@ -8,6 +8,10 @@ import SignupPage from 'pages/Signup';
 import AddNew from 'pages/AddNew';
 import Edit from 'pages/Edit';
 import Cart from 'pages/Cart';
+import MyPage from 'pages/MyPage';
+import OrderHistory from 'components/OrderHistory';
+import OrderDetail from 'pages/OrderDetail';
+import NotFound from 'pages/NotFound';
 
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
@@ -27,6 +31,10 @@ function App() {
             <Route path="/addnew" element={<AddNew />} />
             <Route path="/edit/:id" element={<Edit />} />
             <Route path="cart" element={<Cart />} />
+            <Route path="mypage" element={<MyPage />} />
+            <Route path="mypage/order" element={<OrderHistory />} />
+            <Route path="order/:id" element={<OrderDetail />} />
+            <Route path="/*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </PersistGate>

@@ -4,12 +4,10 @@ const initialState = [
   {
     itemId: 'KzVInmjADywcsWUGvklF',
     quantity: 1,
-    checked: true,
   },
   {
     itemId: 'liHck1vuFVu5Yipyo9wS',
     quantity: 2,
-    checked: true,
   },
 ];
 
@@ -26,7 +24,7 @@ const cartSlice = createSlice({
         state[idx].quantity++;
       } else {
         // 아직 없으면
-        state = [{ itemId: id, quantity: 1, checked: true }, ...state];
+        state = [{ itemId: id, quantity: 1 }, ...state];
       }
       return state;
     },

@@ -10,6 +10,7 @@ import { addDoc, collection } from 'firebase/firestore';
 import { storageService } from 'booksFirebase';
 import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { nanoid } from 'nanoid';
+import moment from 'moment';
 
 const AddNew = () => {
   const navigate = useNavigate();
@@ -53,15 +54,17 @@ const AddNew = () => {
       form = {
         ...form,
         bookImgUrl: fileUrl,
-        createdAt: Date.now(),
+        createdAt: moment(new Date()).format(),
         creatorId: userObj.uid,
+        price: Number(form.price),
       };
     } else {
       form = {
         ...form,
         bookImgUrl: null,
-        createdAt: Date.now(),
+        createdAt: moment(new Date()).format(),
         creatorId: userObj.uid,
+        price: Number(form.price),
       };
     }
 
@@ -140,6 +143,7 @@ const AddNew = () => {
                 </Label>
                 <Input
                   id="price"
+                  type="number"
                   onKeyPress={handleKeyPress}
                   {...register('price', {
                     required: true,

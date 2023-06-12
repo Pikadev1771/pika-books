@@ -20,7 +20,6 @@ const Main = () => {
   const [bookList, setBookList] = useState([]);
 
   useEffect(() => {
-    // getBookList();
     const q = query(collection(dbService, 'books'), orderBy('createdAt'));
     onSnapshot(q, (snapshot) => {
       const bookArr = snapshot.docs.map((book) => ({

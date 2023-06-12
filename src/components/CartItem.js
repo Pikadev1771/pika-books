@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from 'styled-components';
 import { Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router-dom';
 
 const CartItem = ({
   bookData,
@@ -11,6 +12,7 @@ const CartItem = ({
   handleDelete,
   quantity,
 }) => {
+  const navigate = useNavigate();
   return (
     <CartItemBox>
       <ItemSummary>
@@ -21,7 +23,7 @@ const CartItem = ({
             handleCheckChange(bookData.id, e.target.checked);
           }}
         />
-        <Thumbnail>
+        <Thumbnail onClick={() => navigate(`/book/${bookData.id}`)}>
           <img
             src={bookData.bookImgUrl || '/books/Book.png'}
             width={120}
@@ -29,14 +31,16 @@ const CartItem = ({
             alt={bookData.title}
           />
         </Thumbnail>
-        <ItemInfo>
+        <ItemInfo onClick={() => navigate(`/book/${bookData.id}`)}>
           <BookTitle>{bookData.title}</BookTitle>
-          <BookPrice>{bookData.price} 원</BookPrice>
+          <BookPrice>{bookData.price.toLocaleString()}원</BookPrice>
         </ItemInfo>
       </ItemSummary>
       <ItemAdjustment>
         <PriceAndQuantity>
-          <ItemTotalPrice>{bookData.price * quantity}원</ItemTotalPrice>
+          <ItemTotalPrice>
+            {(bookData.price * quantity).toLocaleString()}원
+          </ItemTotalPrice>
           <Quantity
             type="number"
             min={1}
@@ -85,6 +89,10 @@ const CheckBox = styled.input`
 
 const Thumbnail = styled.div`
   margin-right: 20px;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const ItemInfo = styled.div`
@@ -92,12 +100,24 @@ const ItemInfo = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const BookTitle = styled.span`
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   margin-bottom: 8px;
+
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-word;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 1; // 원하는 라인수
+  -webkit-box-orient: vertical;
 `;
 
 const BookPrice = styled.span`
@@ -107,6 +127,7 @@ const BookPrice = styled.span`
 const ItemAdjustment = styled.div`
   display: flex;
   align-items: center;
+  margin-left: 25px;
 `;
 
 const PriceAndQuantity = styled.div`
@@ -117,7 +138,7 @@ const PriceAndQuantity = styled.div`
 `;
 
 const ItemTotalPrice = styled.div`
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   margin-bottom: 8px;
 `;

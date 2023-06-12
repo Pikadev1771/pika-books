@@ -6,44 +6,70 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { TextField } from '@mui/material';
 import { dbService } from 'booksFirebase';
-import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import { storageService } from 'booksFirebase';
 import { deleteObject, ref } from 'firebase/storage';
 import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
+import { nanoid } from '@reduxjs/toolkit';
+import moment from 'moment';
 
-const OrderTotal = ({ total }) => {
-  const { item, quantity, price } = total;
+const OrderTotal = ({ total, selectedBookList, checkedItems }) => {
+  const { numOfItems, quantity, price } = total;
 
   const navigate = useNavigate();
-  const params = useParams();
+
   const userObj = useUser();
 
   const shippingPrice = 0;
+
+  const handleOrder = async () => {
+    const orderId = nanoid();
+
+    // 도서 정보 + 수량 정보
+    const orderItems = selectedBookList.map((book) => {
+      for (let item of checkedItems) {
+        if (item.itemId === book.id) {
+          return { ...book, quantity: item.quantity };
+        }
+      }
+    });
+
+    const orderForm = {
+      orderId: orderId,
+      userId: userObj.uid,
+      orderedAt: moment(new Date()).format(),
+      orderItems: orderItems,
+      totalPrice: price,
+    };
+
+    await addDoc(collection(dbService, 'order'), orderForm);
+
+    navigate(`/order/${orderId}`);
+  };
 
   return (
     <TotalBox>
       <TotalTitle>주문 합계</TotalTitle>
       <ItemAndQuantity>
         <span>주문 상품</span>
-        <span>{`총 ${item}종 ${quantity}권`}</span>
+        <span>{`총 ${numOfItems}종 ${quantity}권`}</span>
       </ItemAndQuantity>
       <Calculation>
         <span>상품 금액</span>
-        <span>{price}원</span>
+        <span>{price.toLocaleString()}원</span>
       </Calculation>
       <Calculation>
         <span>배송료</span>
-        <span>+{shippingPrice}원</span>
+        <span>+{shippingPrice.toLocaleString()}원</span>
       </Calculation>
 
       <TotalPriceAndOrderBtn>
         <TotalPrice>
           <span>결제 예정 금액</span>
-          <span>{price}원</span>
-          {/* <Quantity type="number" value={1}></Quantity> */}
+          <span>{price.toLocaleString()}원</span>
         </TotalPrice>
-        <OrderBtn>주문하기</OrderBtn>
+        <OrderBtn onClick={handleOrder}>주문하기</OrderBtn>
       </TotalPriceAndOrderBtn>
     </TotalBox>
   );

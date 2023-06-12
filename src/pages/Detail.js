@@ -17,7 +17,7 @@ const Detail = () => {
   const params = useParams();
   const userObj = useUser();
 
-  const [bookData, setBookData] = useState();
+  const [bookData, setBookData] = useState({});
   const [quantity, setQuantity] = useState(1);
 
   const isCreator = userObj && bookData && userObj.uid === bookData.creatorId;
@@ -63,10 +63,11 @@ const Detail = () => {
     navigate('/cart');
   };
 
+  console.log(bookData);
   return (
     <>
       <Header />
-      {bookData && (
+      {bookData ? (
         <Wrapper>
           <Container>
             <BookInfoContainer>
@@ -85,14 +86,14 @@ const Detail = () => {
             </BookInfoContainer>
             <ContentsContainer>
               <BookImg
-                src={`${bookData.bookImgUrl || '/books/Book.png'}`}
+                src={`${bookData?.bookImgUrl || '/books/Book.png'}`}
                 width={450}
                 height={620}
               />
               <Contents>
                 <Content>
                   <span>판매가</span>
-                  <span>{`${bookData.price}원`}</span>
+                  <span>{`${bookData?.price?.toLocaleString()}원`}</span>
                 </Content>
                 <Content>
                   <span>배송료</span>
@@ -113,6 +114,10 @@ const Detail = () => {
             </ContentsContainer>
           </Container>
         </Wrapper>
+      ) : (
+        <NotFoundWrapper>
+          <NotFoundText>존재하지 않는 도서입니다</NotFoundText>
+        </NotFoundWrapper>
       )}
     </>
   );
@@ -266,6 +271,20 @@ const CartBtn = styled.button`
   padding: 18px;
   font-size: 20px;
   font-weight: 600;
+`;
+
+const NotFoundWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 65vh;
+  padding: 50px;
+`;
+
+const NotFoundText = styled.p`
+  font-size: 26px;
 `;
 
 export default Detail;

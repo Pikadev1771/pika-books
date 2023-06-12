@@ -22,11 +22,11 @@ const Cart = () => {
 
   // 선택된 아이템 ID 모음 (초기값은 전체 선택 상태)
   const [checkedItemIds, setCheckedItemIds] = useState(cartItemIds);
+
   // 도서 목록
   const [bookList, setBookList] = useState([]);
 
   useEffect(() => {
-    // getBookList();
     const q = query(collection(dbService, 'books'), orderBy('createdAt'));
     onSnapshot(q, (snapshot) => {
       const bookArr = snapshot.docs.map((book) => ({
@@ -41,6 +41,8 @@ const Cart = () => {
   const bookInCartList = bookList
     ?.filter((book) => cartItemIds?.indexOf(book.id) !== -1)
     .sort((a, b) => cartItemIds.indexOf(a.id) - cartItemIds.indexOf(b.id));
+
+  console.log('bookInCartList >>', bookInCartList);
 
   // 아이템 선택 변경
   const handleCheckChange = (id, checked) => {
@@ -71,9 +73,10 @@ const Cart = () => {
     dispatch(REMOVE_FROM_CART({ id }));
   };
 
+  // 선택한 아이템 total 정보
   const getTotal = () => {
     let total = {
-      item: checkedItemIds?.length,
+      numOfItems: checkedItemIds?.length,
       quantity: 0,
       price: 0,
     };
@@ -96,6 +99,16 @@ const Cart = () => {
   };
   const total = getTotal(); // 주문 합계 관련 데이터
 
+  // 선택된 도서 목록
+  const selectedBookList = bookInCartList.filter(
+    (book) => checkedItemIds.indexOf(book.id) !== -1
+  );
+
+  // 선택된 아이템 (ID & 수량 정보)
+  const checkedItems = cartItems.filter(
+    (item) => checkedItemIds.indexOf(item.itemId) !== -1
+  );
+
   return (
     <>
       <Header />
@@ -116,9 +129,6 @@ const Cart = () => {
           </CheckAll>
           <CartContainer>
             <ItemsContainer>
-              {/* <CartItem />
-              <CartItem />
-              <CartItem /> */}
               {bookInCartList.map((book) => {
                 const quantity = cartItems.filter(
                   (item) => item.itemId === book.id
@@ -136,7 +146,11 @@ const Cart = () => {
                 );
               })}
             </ItemsContainer>
-            <OrderTotal total={total} />
+            <OrderTotal
+              total={total}
+              selectedBookList={selectedBookList}
+              checkedItems={checkedItems}
+            />
           </CartContainer>
         </Container>
       </Wrapper>
