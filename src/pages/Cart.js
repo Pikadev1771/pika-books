@@ -1,23 +1,101 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import BookCard from 'components/bookCard';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { TextField } from '@mui/material';
-import { dbService } from 'booksFirebase';
-import { doc, getDoc, deleteDoc } from 'firebase/firestore';
-import { storageService } from 'booksFirebase';
-import { deleteObject, ref } from 'firebase/storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { SET_QUANTITY, REMOVE_FROM_CART } from 'store/slice/cartSlice';
 import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
-import OrderTotal from 'components/OrderTotal';
+
 import CartItem from 'components/CartItem';
+import OrderTotal from 'components/OrderTotal';
+import { dbService } from 'booksFirebase';
+import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 
 const Cart = () => {
-  const navigate = useNavigate();
-  const params = useParams();
-  const userObj = useUser();
+  const dispatch = useDispatch();
+
+  // 카트 내 전체 아이템 (ID & 수량 정보)
+  const cartItems = useSelector((state) => state.cartReducer);
+
+  // 카트 내 전체 아이템 ID 모음
+  const cartItemIds = cartItems?.map((item) => item.itemId);
+
+  // 선택된 아이템 ID 모음 (초기값은 전체 선택 상태)
+  const [checkedItemIds, setCheckedItemIds] = useState(cartItemIds);
+
+  // 도서 목록
+  const [bookList, setBookList] = useState([]);
+
+  useEffect(() => {
+    // getBookList();
+    const q = query(collection(dbService, 'books'), orderBy('createdAt'));
+    onSnapshot(q, (snapshot) => {
+      const bookArr = snapshot.docs.map((book) => ({
+        id: book.id,
+        ...book.data(),
+      }));
+      setBookList(bookArr);
+    });
+  }, []);
+
+  // 카트 내 도서 목록 (장바구니 추가 순 정렬)
+  const bookInCartList = bookList
+    ?.filter((book) => cartItemIds?.indexOf(book.id) !== -1)
+    .sort((a, b) => cartItemIds.indexOf(a.id) - cartItemIds.indexOf(b.id));
+
+  // 아이템 선택 변경
+  const handleCheckChange = (id, checked) => {
+    if (checked) {
+      setCheckedItemIds([...checkedItemIds, id]);
+    } else {
+      setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
+    }
+  };
+
+  // 아이템 전체 선택
+  const handleAllCheck = (checked) => {
+    if (checked) {
+      setCheckedItemIds(cartItemIds);
+    } else {
+      setCheckedItemIds([]);
+    }
+  };
+
+  // 아이템 수량 변경
+  const handleQuantityChange = (id, quantity) => {
+    dispatch(SET_QUANTITY({ id, quantity }));
+  };
+
+  // 아이템 삭제
+  const handleDelete = (id) => {
+    setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
+    dispatch(REMOVE_FROM_CART({ id }));
+  };
+
+  const getTotal = () => {
+    let total = {
+      item: checkedItemIds?.length,
+      quantity: 0,
+      price: 0,
+    };
+
+    // 카트 내 아이템들을 하나씩 순회
+    for (let i = 0; i < cartItemIds.length; i++) {
+      if (checkedItemIds?.indexOf(cartItemIds[i]) !== -1) {
+        // 선택된 아이템이면
+        let itemQuantity = cartItems[i]?.quantity; // 해당 아이템 수량
+        let itemPrice = bookList?.filter(
+          // 해당 아이템 가격
+          (book) => book.id === cartItems[i]?.itemId
+        )[0]?.price;
+
+        total.price += itemQuantity * itemPrice;
+        total.quantity += itemQuantity;
+      }
+    }
+    return total;
+  };
+  const total = getTotal(); // 주문 합계 관련 데이터
 
   return (
     <>
@@ -28,16 +106,38 @@ const Cart = () => {
             <TitleText>장바구니</TitleText>
           </PageTitle>
           <CheckAll>
-            <input type="checkbox" checked={false}></input>
+            <input
+              type="checkbox"
+              checked={
+                checkedItemIds.length === cartItemIds.length ? true : false
+              }
+              onChange={(e) => handleAllCheck(e.target.checked)}
+            />
             <label>전체선택</label>
           </CheckAll>
           <CartContainer>
             <ItemsContainer>
+              {/* <CartItem />
               <CartItem />
-              <CartItem />
-              <CartItem />
+              <CartItem /> */}
+              {bookInCartList.map((book) => {
+                const quantity = cartItems.filter(
+                  (item) => item.itemId === book.id
+                )[0].quantity;
+                return (
+                  <CartItem
+                    key={book.id}
+                    bookData={book}
+                    handleCheckChange={handleCheckChange}
+                    handleQuantityChange={handleQuantityChange}
+                    handleDelete={handleDelete}
+                    checkedItemIds={checkedItemIds}
+                    quantity={quantity}
+                  />
+                );
+              })}
             </ItemsContainer>
-            <OrderTotal />
+            <OrderTotal total={total} />
           </CartContainer>
         </Container>
       </Wrapper>

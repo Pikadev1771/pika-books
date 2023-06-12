@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import BookCard from 'components/bookCard';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { ADD_TO_CART } from 'store/slice/cartSlice';
 import { useParams } from 'react-router-dom';
-import { TextField } from '@mui/material';
 import { dbService } from 'booksFirebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { storageService } from 'booksFirebase';
@@ -14,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Detail = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const params = useParams();
   const userObj = useUser();
 
@@ -22,24 +22,17 @@ const Detail = () => {
 
   const isCreator = userObj && bookData && userObj.uid === bookData.creatorId;
 
-  // const bookData = useSelector((state) => state.bookReducer.books).filter(
-  //   (book) => book.id === params.id
-  // )[0];
-
   const getBookData = async () => {
     const docRef = doc(dbService, 'books', params.id);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-
       const book = { ...docSnap.data(), id: params.id };
       setBookData(book);
     } else {
       console.log('No such document!');
     }
   };
-
-
 
   useEffect(() => {
     getBookData();
@@ -62,6 +55,11 @@ const Detail = () => {
   const handleChangeQuantity = useCallback((e) => {
     setQuantity(Number(e.target.value));
   }, []);
+
+  const handleAddCart = () => {
+    dispatch(ADD_TO_CART({ id: params.id }));
+    navigate('/cart');
+  };
 
   return (
     <>
@@ -107,7 +105,7 @@ const Detail = () => {
                   ></Quantity>
                 </Content>
                 <CartContainer>
-                  <CartBtn>장바구니</CartBtn>
+                  <CartBtn onClick={handleAddCart}>장바구니</CartBtn>
                 </CartContainer>
               </Contents>
             </ContentsContainer>

@@ -4,8 +4,8 @@ import { Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const CartItem = ({
-  item,
-  checkedItems,
+  bookData,
+  checkedItemIds,
   handleCheckChange,
   handleQuantityChange,
   handleDelete,
@@ -14,21 +14,39 @@ const CartItem = ({
   return (
     <CartItemBox>
       <ItemSummary>
-        <CheckBox type="checkbox" />
+        <CheckBox
+          type="checkbox"
+          checked={checkedItemIds.indexOf(bookData.id) !== -1 ? true : false}
+          onChange={(e) => {
+            handleCheckChange(bookData.id, e.target.checked);
+          }}
+        />
         <Thumbnail>
-          <img src={'/books/Book.png'} width={120} height={150} alt={''} />
+          <img
+            src={bookData.bookImgUrl || '/books/Book.png'}
+            width={120}
+            height={150}
+            alt={bookData.title}
+          />
         </Thumbnail>
         <ItemInfo>
-          <BookTitle>사계절 책</BookTitle>
-          <BookPrice>15000 원</BookPrice>
+          <BookTitle>{bookData.title}</BookTitle>
+          <BookPrice>{bookData.price} 원</BookPrice>
         </ItemInfo>
       </ItemSummary>
       <ItemAdjustment>
         <PriceAndQuantity>
-          <ItemTotalPrice>30000원</ItemTotalPrice>
-          <Quantity type="number" min={1} value={1} />
+          <ItemTotalPrice>{bookData.price * quantity}원</ItemTotalPrice>
+          <Quantity
+            type="number"
+            min={1}
+            value={quantity}
+            onChange={(e) =>
+              handleQuantityChange(bookData.id, Number(e.target.value))
+            }
+          />
         </PriceAndQuantity>
-        <DeleteBtn>
+        <DeleteBtn onClick={() => handleDelete(bookData.id)}>
           <DeleteIcon
             sx={{
               width: '55px',

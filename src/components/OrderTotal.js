@@ -12,27 +12,35 @@ import { deleteObject, ref } from 'firebase/storage';
 import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 
-const OrderTotal = () => {
+const OrderTotal = ({ total }) => {
+  const { item, quantity, price } = total;
+
   const navigate = useNavigate();
   const params = useParams();
   const userObj = useUser();
 
+  const shippingPrice = 0;
+
   return (
     <TotalBox>
       <TotalTitle>주문 합계</TotalTitle>
+      <ItemAndQuantity>
+        <span>주문 상품</span>
+        <span>{`총 ${item}종 ${quantity}권`}</span>
+      </ItemAndQuantity>
       <Calculation>
         <span>상품 금액</span>
-        <span>49000원</span>
+        <span>{price}원</span>
       </Calculation>
       <Calculation>
         <span>배송료</span>
-        <span>+0원</span>
+        <span>+{shippingPrice}원</span>
       </Calculation>
 
       <TotalPriceAndOrderBtn>
         <TotalPrice>
           <span>결제 예정 금액</span>
-          <span>49000원</span>
+          <span>{price}원</span>
           {/* <Quantity type="number" value={1}></Quantity> */}
         </TotalPrice>
         <OrderBtn>주문하기</OrderBtn>
@@ -56,6 +64,17 @@ const TotalTitle = styled.span`
   font-size: 26px;
   font-weight: 600;
   margin-bottom: 100px;
+`;
+const ItemAndQuantity = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+
+  span {
+    font-size: 24px;
+  }
 `;
 
 const Calculation = styled.div`
