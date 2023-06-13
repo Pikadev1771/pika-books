@@ -9,17 +9,19 @@ import AddNew from 'pages/AddNew';
 import Edit from 'pages/Edit';
 import Cart from 'pages/Cart';
 import MyPage from 'pages/MyPage';
-import OrderHistory from 'components/OrderHistory';
-import OrderDetail from 'pages/OrderDetail';
+import OrderConfirm from 'pages/OrderConfirm';
 import NotFound from 'pages/NotFound';
 
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
 import PrivateRoute from 'privateRoute';
 
+import useUser from 'hooks/useUser';
+
 export const persistor = persistStore(store);
 
 function App() {
+  const userObj = useUser();
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -36,8 +38,10 @@ function App() {
               <Route path="/edit/:id" element={<Edit />} />
               <Route path="cart" element={<Cart />} />
               <Route path="mypage" element={<MyPage />} />
-              <Route path="mypage/order" element={<OrderHistory />} />
-              <Route path="order/:id" element={<OrderDetail />} />
+              <Route
+                path="order/:id"
+                element={<OrderConfirm userObj={userObj} />}
+              />
             </Route>
             <Route path="/*" element={<NotFound />} />
           </Routes>

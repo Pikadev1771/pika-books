@@ -6,11 +6,13 @@ import { signOut } from 'firebase/auth';
 import useLogin from 'hooks/useLogin';
 import useUser from 'hooks/useUser';
 import Search from './Search';
+import { REMOVE_ALL_FROM_CART } from 'store/slice/cartSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Header() {
   const [init, isLoggedIn] = useLogin();
   const userObj = useUser();
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +23,9 @@ export default function Header() {
   const handleLogOut = () => {
     signOut(authService);
     setIsModalOpen(false);
+
+    // 장바구니 비우기
+    dispatch(REMOVE_ALL_FROM_CART());
     navigate('/');
   };
 

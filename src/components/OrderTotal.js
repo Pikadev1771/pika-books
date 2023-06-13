@@ -13,6 +13,7 @@ import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 import { nanoid } from '@reduxjs/toolkit';
 import moment from 'moment';
+import { doc, setDoc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 const OrderTotal = ({
   total,
@@ -30,7 +31,6 @@ const OrderTotal = ({
 
   const handleOrder = async () => {
     const orderId = nanoid();
-
     // 도서 정보 + 수량 정보
     const orderItems = selectedBookList.map((book) => {
       for (let item of checkedItems) {
@@ -48,9 +48,21 @@ const OrderTotal = ({
       totalPrice: price,
     };
 
-    await addDoc(collection(dbService, 'order'), orderForm);
+    const userDocRef = doc(dbService, 'order', `${userObj?.uid}`);
+    const userDocSnap = await getDoc(userDocRef);
 
-    // 장바구니에서 삭제
+    if (userDocSnap.exists()) {
+      await updateDoc(userDocRef, {
+        orderList: arrayUnion(orderForm),
+      });
+    } else {
+      await setDoc(userDocRef, { orderList: [] });
+      await updateDoc(userDocRef, {
+        orderList: arrayUnion(orderForm),
+      });
+    }
+
+    // 장바구니에서 주문 상품 삭제
     checkedItems.forEach((item) => {
       handleDelete(item.itemId);
     });
@@ -79,7 +91,9 @@ const OrderTotal = ({
           <span>결제 예정 금액</span>
           <span>{price.toLocaleString()}원</span>
         </TotalPrice>
-        <OrderBtn onClick={handleOrder}>주문하기</OrderBtn>
+        <OrderBtn disabled={!quantity} onClick={handleOrder}>
+          주문하기
+        </OrderBtn>
       </TotalPriceAndOrderBtn>
     </TotalBox>
   );
@@ -147,7 +161,7 @@ const TotalPrice = styled.div`
 const OrderBtn = styled.button`
   width: 100%;
   color: white;
-  background-color: black;
+  background-color: ${(props) => (props.disabled ? '#d3d1d1' : 'black')};
   border: none;
   margin-top: 30px;
   padding: 18px;

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from 'booksFirebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -125,7 +126,8 @@ const LoginPage = () => {
           </InputSet>
           <ButtonContainer>
             <LoginErrorMessage>{loginErrorMessage}</LoginErrorMessage>
-            <LogInBtn type="submit" value={'Log In'} />
+
+            <LogInBtn type="submit">Log In</LogInBtn>
             <LinkContainer>
               아직 회원이 아니신가요?
               <LinkBtn onClick={() => navigate('/signup')}>Sign Up</LinkBtn>
@@ -239,7 +241,11 @@ const LoginErrorMessage = styled.p`
   font-size: 16px;
 `;
 
-const LogInBtn = styled.input`
+const LoadingContainer = styled.div`
+  margin-bottom: 15px;
+`;
+
+const LogInBtn = styled.button`
   width: 450px;
   height: 70px;
   padding: 10px 0;

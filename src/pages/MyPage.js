@@ -3,15 +3,17 @@ import styled from 'styled-components';
 import Header from 'components/Header';
 import MyInfo from 'components/MyInfo';
 import OrderHistory from 'components/OrderHistory';
+import useUser from 'hooks/useUser';
 
 export default function MyPage() {
   const [currentTab, setCurrentTab] = useState(0);
+  const userObj = useUser();
 
   const tabArr = [
     { name: '내 정보 수정', content: <MyInfo /> },
     {
       name: '주문 내역',
-      content: <OrderHistory />,
+      content: <OrderHistory userObj={userObj} />,
     },
   ];
 

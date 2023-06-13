@@ -4,9 +4,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from 'booksFirebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import useUser from 'hooks/useUser';
+import { doc, setDoc } from 'firebase/firestore';
+import { dbService } from 'booksFirebase';
 
 const SignupPage = () => {
   const navigate = useNavigate();
+
+  const userObj = useUser();
 
   const [signupErrorMessage, setSignupErrorMessage] = useState();
 
@@ -43,13 +48,16 @@ const SignupPage = () => {
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
   const nicknameRegex = /^(?=.*[a-z0-9가-힣])[a-z0-9가-힣]{2,16}$/;
 
+  console.log(userObj);
+
   // 회원가입 요청
   const onSubmit = async (form) => {
     const { email, pw, nickname } = form;
     try {
       const res = await createUserWithEmailAndPassword(authService, email, pw);
       await updateProfile(authService.currentUser, { displayName: nickname });
-      navigate('/');
+      console.log(userObj);
+      // navigate('/');
     } catch (error) {
       if (error.code === `auth/email-already-in-use`) {
         setSignupErrorMessage('이미 존재하는 이메일입니다');
@@ -190,7 +198,7 @@ const SignupPage = () => {
           </InputSet>
           <ButtonContainer>
             <SignupErrorMessage>{signupErrorMessage}</SignupErrorMessage>
-            <LogInBtn type="submit" value={'Sign Up'} />
+            <SignupBtn type="submit">Sign Up</SignupBtn>
             <LinkContainer>
               이미 가입한 회원이신가요?
               <LinkBtn onClick={() => navigate('/login')}>Log In</LinkBtn>
@@ -312,7 +320,7 @@ const SignupErrorMessage = styled.p`
   font-size: 16px;
 `;
 
-const LogInBtn = styled.input`
+const SignupBtn = styled.button`
   width: 450px;
   height: 70px;
   padding: 10px 0;

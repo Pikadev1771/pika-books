@@ -1,87 +1,94 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { useDispatch, useSelector } from 'react-redux';
-import { SET_QUANTITY, REMOVE_FROM_CART } from 'store/slice/cartSlice';
-import useUser from 'hooks/useUser';
-import { useNavigate } from 'react-router-dom';
-
-import CartItem from 'components/CartItem';
-import OrderTotal from 'components/OrderTotal';
 import { dbService } from 'booksFirebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { useParams } from 'react-router-dom';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import useUser from 'hooks/useUser';
 
-export default function OrderHistory({ userObj }) {
-  const [orderList, setOrderList] = useState();
+const OrderConfirml = ({ userObj }) => {
+  const params = useParams();
+  const [order, setOrder] = useState();
 
   console.log(userObj);
 
-  const getOrderList = async () => {
+  const getOrder = async () => {
     const docRef = doc(dbService, 'order', userObj?.uid);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      setOrderList(docSnap.data().orderList.reverse());
+      console.log(docSnap.data());
+      setOrder(
+        docSnap
+          .data()
+          .orderList.filter((order) => order.orderId === params.id)[0]
+      );
     } else {
       console.log('No such document!');
     }
   };
 
   useEffect(() => {
-    getOrderList();
+    getOrder();
   }, []);
+
+  console.log(order);
 
   return (
     <>
+      <Header />
       <Wrapper>
-        {orderList?.map((order) => (
-          <Order>
-            <OrderDate>{order.orderedAt.slice(0, 10)}</OrderDate>
-            {order?.orderItems?.map((item) => (
-              <ItemBox>
-                <ItemSummary>
-                  <Thumbnail>
-                    <img
-                      src={item.bookImgUrl || '/books/Book.png'}
-                      width={120}
-                      height={150}
-                      alt="bookImg"
-                    />
-                  </Thumbnail>
-                  <ItemInfo>
-                    <BookTitle>{item.title}</BookTitle>
-                    <NumOfBooks>{`수량: ${item.quantity}개`}</NumOfBooks>
-                  </ItemInfo>
-                </ItemSummary>
-                <ItemAdjustment>
-                  <PriceAndQuantity>
-                    <ItemTotalPrice>
-                      {(item.price * item.quantity).toLocaleString()}원
-                    </ItemTotalPrice>
-                    <Shipping>배송 중</Shipping>
-                  </PriceAndQuantity>
-                </ItemAdjustment>
-              </ItemBox>
-            ))}
-            <Total>
-              <SubText>
-                상품 금액 {order.totalPrice.toLocaleString()}원 + 배송비 0원 =
-              </SubText>
-              총 결제 금액 {order.totalPrice.toLocaleString()}원
-            </Total>
-          </Order>
-        ))}
+        <ConfirmText>주문이 완료되었습니다</ConfirmText>
+        <Order>
+          <OrderDate>{order?.orderedAt?.slice(0, 10)}</OrderDate>
+          {order?.orderItems?.map((item) => (
+            <ItemBox>
+              <ItemSummary>
+                <Thumbnail>
+                  <img
+                    src={item.bookImgUrl || '/books/Book.png'}
+                    width={100}
+                    height={130}
+                    alt="bookImg"
+                  />
+                </Thumbnail>
+                <ItemInfo>
+                  <BookTitle>{item.title}</BookTitle>
+                  <NumOfBooks>{`수량: ${item.quantity}개`}</NumOfBooks>
+                </ItemInfo>
+              </ItemSummary>
+              <ItemAdjustment>
+                <PriceAndQuantity>
+                  <ItemTotalPrice>
+                    {(item.price * item.quantity).toLocaleString()}원
+                  </ItemTotalPrice>
+                </PriceAndQuantity>
+              </ItemAdjustment>
+            </ItemBox>
+          ))}
+          <Total>
+            <SubText>
+              상품 금액 {order?.totalPrice?.toLocaleString()}원 + 배송비 0원 =
+            </SubText>
+            총 결제 금액 {order?.totalPrice?.toLocaleString()}원
+          </Total>
+        </Order>
       </Wrapper>
     </>
   );
-}
+};
 
 const Wrapper = styled.div`
-  display: flex;
+  ${({ theme }) => theme.flexCenter};
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  margin-top: 60px;
+`;
+
+const ConfirmText = styled.p`
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 30px;
 `;
 
 const Order = styled.div`
@@ -89,7 +96,7 @@ const Order = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 100%;
+  width: 50%;
   border: 4px solid black;
   margin-bottom: 20px;
   padding: 40px;
@@ -113,7 +120,7 @@ const ItemBox = styled.div`
   align-items: center;
   width: 100%;
   background-color: #dcdcdc;
-  padding: 20px;
+  padding: 20px 30px;
   margin-bottom: 20px;
 `;
 
@@ -202,3 +209,5 @@ const SubText = styled.span`
   font-size: 20px;
   margin-right: 6px;
 `;
+
+export default OrderConfirml;

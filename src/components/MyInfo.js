@@ -220,7 +220,7 @@ export default function MyInfo() {
         </InputSet>
         <ButtonContainer>
           <SignupErrorMessage>{signupErrorMessage}</SignupErrorMessage>
-          <LogInBtn type="submit" value={'수정'} />
+          <LogInBtn type="submit">수정</LogInBtn>
         </ButtonContainer>
       </Form>
       <Snackbar
@@ -361,7 +361,7 @@ const SignupErrorMessage = styled.p`
   font-size: 16px;
 `;
 
-const LogInBtn = styled.input`
+const LogInBtn = styled.button`
   width: 450px;
   height: 70px;
   padding: 10px 0;
@@ -371,11 +371,6 @@ const LogInBtn = styled.input`
   background-color: black;
   font-size: 20px;
   font-weight: 600;
-
-  :hover {
-    cursor: pointer;
-    width: 600px;
-  }
 
   @media screen and (max-width: 767px) {
     width: 100%;

@@ -20,10 +20,6 @@ const AddNew = () => {
 
   const [imgUrl, setImgUrl] = useState(); // 이미지 URL (업로드 작업 할 동안 임시 사용 용도)
 
-  console.log('init', init);
-  console.log('isLoggedIn', init, isLoggedIn);
-  // console.log('isLoading', isLoading);
-
   // react-hook-form
   const {
     register,

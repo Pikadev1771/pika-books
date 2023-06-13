@@ -13,6 +13,7 @@ import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
 
   // 카트 내 전체 아이템 (ID & 수량 정보)
   const cartItems = useSelector((state) => state.cartReducer);
@@ -35,6 +36,7 @@ const Cart = () => {
       }));
       setBookList(bookArr);
     });
+    setIsLoading(false);
   }, []);
 
   // 카트 내 도서 목록 (장바구니 추가 순 정렬)
@@ -115,34 +117,42 @@ const Cart = () => {
           <PageTitle>
             <TitleText>장바구니</TitleText>
           </PageTitle>
-          <CheckAll>
-            <input
-              type="checkbox"
-              checked={
-                checkedItemIds.length === cartItemIds.length ? true : false
-              }
-              onChange={(e) => handleAllCheck(e.target.checked)}
-            />
-            <label>전체선택</label>
-          </CheckAll>
+          {bookInCartList.length ? (
+            <CheckAll>
+              <input
+                type="checkbox"
+                checked={
+                  checkedItemIds.length === cartItemIds.length ? true : false
+                }
+                onChange={(e) => handleAllCheck(e.target.checked)}
+              />
+              <label>전체선택</label>
+            </CheckAll>
+          ) : null}
           <CartContainer>
             <ItemsContainer>
-              {bookInCartList.map((book) => {
-                const quantity = cartItems.filter(
-                  (item) => item.itemId === book.id
-                )[0].quantity;
-                return (
-                  <CartItem
-                    key={book.id}
-                    bookData={book}
-                    handleCheckChange={handleCheckChange}
-                    handleQuantityChange={handleQuantityChange}
-                    handleDelete={handleDelete}
-                    checkedItemIds={checkedItemIds}
-                    quantity={quantity}
-                  />
-                );
-              })}
+              {bookInCartList.length ? (
+                bookInCartList.map((book) => {
+                  const quantity = cartItems.filter(
+                    (item) => item.itemId === book.id
+                  )[0].quantity;
+                  return (
+                    <CartItem
+                      key={book.id}
+                      bookData={book}
+                      handleCheckChange={handleCheckChange}
+                      handleQuantityChange={handleQuantityChange}
+                      handleDelete={handleDelete}
+                      checkedItemIds={checkedItemIds}
+                      quantity={quantity}
+                    />
+                  );
+                })
+              ) : (
+                <NoItemBox>
+                  <p>장바구니에 담긴 상품이 없습니다</p>
+                </NoItemBox>
+              )}
             </ItemsContainer>
             <OrderTotal
               total={total}
@@ -227,7 +237,15 @@ const CartContainer = styled.div`
 
 const ItemsContainer = styled.div`
   width: 650px;
-  /* border: 4px solid black; */
+`;
+
+const NoItemBox = styled.div`
+  ${({ theme }) => theme.flexCenter};
+
+  padding: 20px;
+  margin-bottom: 20px;
+  height: 500px;
+  font-size: 22px;
 `;
 
 export default Cart;

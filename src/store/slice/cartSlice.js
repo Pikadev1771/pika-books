@@ -24,6 +24,10 @@ const cartSlice = createSlice({
       state = state.filter((item) => item.itemId !== id);
       return state;
     },
+    REMOVE_ALL_FROM_CART: (state) => {
+      state = [];
+      return state;
+    },
     SET_QUANTITY: (state, action) => {
       const { id, quantity } = action.payload;
       state = state.map((item) =>
@@ -34,5 +38,9 @@ const cartSlice = createSlice({
 });
 
 export default cartSlice;
-export const { ADD_TO_CART, REMOVE_FROM_CART, SET_QUANTITY } =
-  cartSlice.actions;
+export const {
+  ADD_TO_CART,
+  REMOVE_FROM_CART,
+  REMOVE_ALL_FROM_CART,
+  SET_QUANTITY,
+} = cartSlice.actions;

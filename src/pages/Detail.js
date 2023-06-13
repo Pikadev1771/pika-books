@@ -19,7 +19,7 @@ const Detail = () => {
 
   const [bookData, setBookData] = useState();
   const [quantity, setQuantity] = useState(1);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const isCreator = userObj && bookData && userObj.uid === bookData.creatorId;
 
@@ -30,6 +30,7 @@ const Detail = () => {
     if (docSnap.exists()) {
       const book = { ...docSnap.data(), id: params.id };
       setBookData(book);
+      setIsLoading(false);
     } else {
       console.log('No such document!');
     }
@@ -67,57 +68,61 @@ const Detail = () => {
   return (
     <>
       <Header />
-      {bookData ? (
-        <Wrapper>
-          <Container>
-            <BookInfoContainer>
-              <BookInfo>
-                <Title>{bookData.title}</Title>
-                <AuthorAndPublisher>{`${bookData.author} | ${bookData.publisher}`}</AuthorAndPublisher>
-              </BookInfo>
-              {isCreator && (
-                <Menu>
-                  <MenuBtn onClick={() => navigate(`/edit/${bookData.id}`)}>
-                    수정
-                  </MenuBtn>
-                  <MenuBtn onClick={handleDelete}>삭제</MenuBtn>
-                </Menu>
-              )}
-            </BookInfoContainer>
-            <ContentsContainer>
-              <BookImg
-                src={`${bookData?.bookImgUrl || '/books/Book.png'}`}
-                width={450}
-                height={620}
-              />
-              <Contents>
-                <Content>
-                  <span>판매가</span>
-                  <span>{`${bookData?.price?.toLocaleString()}원`}</span>
-                </Content>
-                <Content>
-                  <span>배송료</span>
-                  <span>무료</span>
-                </Content>
-                <Content>
-                  <span>수량</span>
-                  <Quantity
-                    type="number"
-                    value={quantity}
-                    onChange={handleChangeQuantity}
-                  ></Quantity>
-                </Content>
-                <CartContainer>
-                  <CartBtn onClick={handleAddCart}>장바구니</CartBtn>
-                </CartContainer>
-              </Contents>
-            </ContentsContainer>
-          </Container>
-        </Wrapper>
-      ) : (
-        <NotFoundWrapper>
-          <NotFoundText>존재하지 않는 도서입니다</NotFoundText>
-        </NotFoundWrapper>
+      {!isLoading && (
+        <>
+          {bookData ? (
+            <Wrapper>
+              <Container>
+                <BookInfoContainer>
+                  <BookInfo>
+                    <Title>{bookData.title}</Title>
+                    <AuthorAndPublisher>{`${bookData.author} | ${bookData.publisher}`}</AuthorAndPublisher>
+                  </BookInfo>
+                  {isCreator && (
+                    <Menu>
+                      <MenuBtn onClick={() => navigate(`/edit/${bookData.id}`)}>
+                        수정
+                      </MenuBtn>
+                      <MenuBtn onClick={handleDelete}>삭제</MenuBtn>
+                    </Menu>
+                  )}
+                </BookInfoContainer>
+                <ContentsContainer>
+                  <BookImg
+                    src={`${bookData?.bookImgUrl || '/books/Book.png'}`}
+                    width={450}
+                    height={620}
+                  />
+                  <Contents>
+                    <Content>
+                      <span>판매가</span>
+                      <span>{`${bookData?.price?.toLocaleString()}원`}</span>
+                    </Content>
+                    <Content>
+                      <span>배송료</span>
+                      <span>무료</span>
+                    </Content>
+                    <Content>
+                      <span>수량</span>
+                      <Quantity
+                        type="number"
+                        value={quantity}
+                        onChange={handleChangeQuantity}
+                      ></Quantity>
+                    </Content>
+                    <CartContainer>
+                      <CartBtn onClick={handleAddCart}>장바구니</CartBtn>
+                    </CartContainer>
+                  </Contents>
+                </ContentsContainer>
+              </Container>
+            </Wrapper>
+          ) : (
+            <NotFoundWrapper>
+              <NotFoundText>존재하지 않는 도서입니다</NotFoundText>
+            </NotFoundWrapper>
+          )}
+        </>
       )}
     </>
   );

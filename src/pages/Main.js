@@ -5,16 +5,12 @@ import BookCard from 'components/BookCard';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { dbService } from 'booksFirebase';
-import {
-  getDocs, // temp
-  collection,
-  query,
-  onSnapshot,
-  orderBy,
-} from 'firebase/firestore';
+import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+import useLogin from 'hooks/useLogin';
 
 const Main = () => {
   const navigate = useNavigate();
+  const [init, isLoggedIn] = useLogin();
 
   const [bookList, setBookList] = useState([]);
 
@@ -36,7 +32,9 @@ const Main = () => {
         <Container>
           <PageTitle>
             <Title>도서 목록</Title>
-            <AddBtn onClick={() => navigate('/addnew')}>▶ 책 등록하기</AddBtn>
+            {isLoggedIn && (
+              <AddBtn onClick={() => navigate('/addnew')}>책 등록하기</AddBtn>
+            )}
           </PageTitle>
           <List>
             {bookList?.map((book) => {
@@ -109,6 +107,7 @@ const List = styled.div`
 `;
 
 const AddBtn = styled.button`
+  width: 150px;
   color: white;
   background-color: black;
   border: none;

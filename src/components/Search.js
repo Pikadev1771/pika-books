@@ -56,7 +56,7 @@ export default function Search() {
     <Filter>
       <SearchInput
         variant="standard"
-        placeholder="책 제목, 저자명으로 검색해보세요"
+        placeholder="책 제목, 저자명, 출판사로 검색해보세요"
         onChange={handleFilterBooks}
       />
       {filteredBooks.length ? (

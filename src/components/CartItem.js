@@ -16,13 +16,15 @@ const CartItem = ({
   return (
     <CartItemBox>
       <ItemSummary>
-        <CheckBox
-          type="checkbox"
-          checked={checkedItemIds.indexOf(bookData.id) !== -1 ? true : false}
-          onChange={(e) => {
-            handleCheckChange(bookData.id, e.target.checked);
-          }}
-        />
+        <CheckboxContainer>
+          <CheckBox
+            type="checkbox"
+            checked={checkedItemIds.indexOf(bookData.id) !== -1 ? true : false}
+            onChange={(e) => {
+              handleCheckChange(bookData.id, e.target.checked);
+            }}
+          />
+        </CheckboxContainer>
         <Thumbnail onClick={() => navigate(`/book/${bookData.id}`)}>
           <img
             src={bookData.bookImgUrl || '/books/Book.png'}
@@ -81,10 +83,15 @@ const ItemSummary = styled.div`
   align-items: center;
 `;
 
-const CheckBox = styled.input`
+const CheckboxContainer = styled.div`
   width: 20px;
   height: 20px;
   margin-right: 20px;
+`;
+
+const CheckBox = styled.input`
+  width: 20px;
+  height: 20px;
 `;
 
 const Thumbnail = styled.div`
@@ -106,18 +113,16 @@ const ItemInfo = styled.div`
   }
 `;
 
-const BookTitle = styled.span`
+const BookTitle = styled.div`
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  line-height: 1.4;
+
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 8px;
-
-  text-overflow: ellipsis;
-  overflow: hidden;
-  word-break: break-word;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 1; // 원하는 라인수
-  -webkit-box-orient: vertical;
 `;
 
 const BookPrice = styled.span`
