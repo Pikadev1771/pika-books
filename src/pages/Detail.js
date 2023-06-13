@@ -2,7 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { useDispatch, useSelector } from 'react-redux';
-import { ADD_TO_CART, REMOVE_FROM_CART } from 'store/slice/cartSlice';
+import {
+  ADD_TO_CART,
+  SET_QUANTITY,
+  REMOVE_FROM_CART,
+} from 'store/slice/cartSlice';
 import { useParams } from 'react-router-dom';
 import { dbService } from 'booksFirebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
@@ -61,9 +65,11 @@ const Detail = () => {
   }, []);
 
   const handleAddCart = () => {
-    dispatch(ADD_TO_CART({ id: params.id }));
+    dispatch(ADD_TO_CART({ id: params.id, quantity: quantity }));
     navigate('/cart');
   };
+
+  console.log(quantity);
 
   return (
     <>
@@ -106,6 +112,7 @@ const Detail = () => {
                       <span>수량</span>
                       <Quantity
                         type="number"
+                        min={1}
                         value={quantity}
                         onChange={handleChangeQuantity}
                       ></Quantity>

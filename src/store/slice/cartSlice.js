@@ -7,15 +7,15 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     ADD_TO_CART: (state, action) => {
-      const { id } = action.payload;
+      const { id, quantity } = action.payload;
 
       if (state.filter((item) => item.itemId === id).length) {
         // 이미 장바구니에 있으면
         const idx = state.map((item) => item.itemId).indexOf(id); // 장바구니 내 인덱스
-        state[idx].quantity++;
+        state[idx].quantity = state[idx].quantity + quantity;
       } else {
         // 아직 없으면
-        state = [{ itemId: id, quantity: 1 }, ...state];
+        state = [{ itemId: id, quantity: quantity }, ...state];
       }
       return state;
     },

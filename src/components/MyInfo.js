@@ -1,33 +1,18 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import Header from 'components/Header';
-import { useDispatch, useSelector } from 'react-redux';
-import { SET_QUANTITY, REMOVE_FROM_CART } from 'store/slice/cartSlice';
+import { useForm } from 'react-hook-form';
+
 import useUser from 'hooks/useUser';
-import { useNavigate } from 'react-router-dom';
 import { authService } from 'booksFirebase';
 
-import {
-  createUserWithEmailAndPassword,
-  updatePassword,
-  updateProfile,
-} from 'firebase/auth';
-
-import CartItem from 'components/CartItem';
-import OrderTotal from 'components/OrderTotal';
-import { dbService } from 'booksFirebase';
-import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { updatePassword, updateProfile } from 'firebase/auth';
 
 import Snackbar from '@mui/material/Snackbar';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
+
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
 export default function MyInfo() {
-  const navigate = useNavigate();
   const userObj = useUser();
 
   const [signupErrorMessage, setSignupErrorMessage] = useState();
@@ -97,7 +82,7 @@ export default function MyInfo() {
       setAlertOpen(true);
       setAlertOption({
         severity: 'error',
-        value: '내 정보 수정에 실패했습니다. 잠시 후 다시 시도해주세요',
+        value: '내 정보 수정을 실패했습니다. 잠시 후 다시 시도해주세요',
       });
     }
   };
