@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
+import MyInfo from 'components/MyInfo';
 import OrderHistory from 'components/OrderHistory';
 
 export default function MyPage() {
   const [currentTab, setCurrentTab] = useState(0);
 
   const tabArr = [
-    { name: '내 정보 수정', content: '내 정보!!' },
+    { name: '내 정보 수정', content: <MyInfo /> },
     {
       name: '주문 내역',
       content: <OrderHistory />,
@@ -130,7 +131,6 @@ const Tab = styled.li`
 `;
 
 const Content = styled.div`
-  /* border: 4px solid black; */
   width: 800px;
   margin-left: 40px;
 `;

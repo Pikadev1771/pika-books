@@ -20,6 +20,7 @@ export default function Header() {
   const handleLogOut = () => {
     signOut(authService);
     setIsModalOpen(false);
+    navigate('/');
   };
 
   const handleGoMyPage = () => {

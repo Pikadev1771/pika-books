@@ -17,8 +17,9 @@ const Detail = () => {
   const params = useParams();
   const userObj = useUser();
 
-  const [bookData, setBookData] = useState({});
+  const [bookData, setBookData] = useState();
   const [quantity, setQuantity] = useState(1);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const isCreator = userObj && bookData && userObj.uid === bookData.creatorId;
 

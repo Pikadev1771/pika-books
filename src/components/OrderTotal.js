@@ -17,6 +17,8 @@ import moment from 'moment';
 const OrderTotal = ({ total, selectedBookList, checkedItems }) => {
   const { numOfItems, quantity, price } = total;
 
+  console.log(total);
+
   const navigate = useNavigate();
 
   const userObj = useUser();

@@ -1,14 +1,41 @@
+import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useState } from 'react';
+import Header from 'components/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { SET_QUANTITY, REMOVE_FROM_CART } from 'store/slice/cartSlice';
+import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 import { authService } from 'booksFirebase';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
-const SignupPage = () => {
+import {
+  createUserWithEmailAndPassword,
+  updatePassword,
+  updateProfile,
+} from 'firebase/auth';
+
+import CartItem from 'components/CartItem';
+import OrderTotal from 'components/OrderTotal';
+import { dbService } from 'booksFirebase';
+import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+
+export default function MyInfo() {
   const navigate = useNavigate();
+  const userObj = useUser();
 
   const [signupErrorMessage, setSignupErrorMessage] = useState();
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertOption, setAlertOption] = useState({
+    severity: 'error',
+    value: '',
+  });
 
   // react-hook-form
   const {
@@ -38,64 +65,62 @@ const SignupPage = () => {
     }
   };
 
+  const handleAlertClose = (e, reason) => {
+    if (reason === 'clickaway') return;
+    setAlertOpen(false);
+  };
+
   // 유효성 검사
-  const emailRegex = new RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
   const nicknameRegex = /^(?=.*[a-z0-9가-힣])[a-z0-9가-힣]{2,16}$/;
 
-  // 회원가입 요청
+  // 회원 정보 수정
   const onSubmit = async (form) => {
-    const { email, pw, nickname } = form;
-    try {
-      const res = await createUserWithEmailAndPassword(authService, email, pw);
-      await updateProfile(authService.currentUser, { displayName: nickname });
-      navigate('/');
-    } catch (error) {
-      if (error.code === `auth/email-already-in-use`) {
-        setSignupErrorMessage('이미 존재하는 이메일입니다');
+    // form 초기값('') 수정
+    for (let prop in form) {
+      if (!form[prop].length) {
+        form[prop] = userObj[prop];
       }
+    }
+
+    try {
+      await updateProfile(authService.currentUser, {
+        displayName: form.nickname,
+      });
+      await updatePassword(authService.currentUser, form.pw);
+      setAlertOpen(true);
+      setAlertOption({
+        severity: 'success',
+        value: '내 정보가 수정되었습니다',
+      });
+    } catch (error) {
+      setAlertOpen(true);
+      setAlertOption({
+        severity: 'error',
+        value: '내 정보 수정에 실패했습니다. 잠시 후 다시 시도해주세요',
+      });
     }
   };
 
   return (
-    <>
-      <SignupLayout>
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <HomeBtnContainer onClick={() => navigate('/')}>
-            <img src="/logo/Logo.svg" width="500" height="120" alt="home" />
-          </HomeBtnContainer>
-          <InputSet>
-            <Label htmlFor="email">
-              Email<Required>*</Required>
-            </Label>
-            <Input
-              id="email"
-              placeholder="이메일을 입력해주세요"
-              onKeyPress={handleKeyPress}
-              {...register('email', {
-                required: true,
-                pattern: emailRegex,
-              })}
-            />
-            {errors?.email?.type === 'required' && (
-              <ErrorMessage>이메일을 입력해주세요</ErrorMessage>
-            )}
-
-            {errors?.email?.type === 'pattern' && (
-              <ErrorMessage>
-                2자 이상 16자 이하, 영어, 숫자 또는 한글로 구성되어야 합니다.
-              </ErrorMessage>
-            )}
-          </InputSet>
-          <InputSet>
+    <Wrapper>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <InputSet>
+          <LabelAndInput>
+            <Label htmlFor="email">이메일</Label>
+            <Text>{userObj?.email}</Text>
+          </LabelAndInput>
+        </InputSet>
+        <InputSet>
+          <LabelAndInput>
             <Label htmlFor="pw">
-              Password<Required>*</Required>
+              비밀번호<Required>*</Required>
             </Label>
             <InputContainer>
               <Input
                 id="pw"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="비밀번호를 입력해주세요"
+                placeholder="새 비밀번호를 입력해주세요"
                 onKeyPress={handleKeyPress}
                 {...register('pw', {
                   required: true,
@@ -120,24 +145,26 @@ const SignupPage = () => {
                 )}
               </EyeBtn>
             </InputContainer>
-            {errors?.pw?.type === 'required' && (
-              <ErrorMessage>비밀번호를 입력해주세요</ErrorMessage>
-            )}
-            {errors?.pw?.type === 'pattern' && (
-              <ErrorMessage>
-                소문자, 숫자, 특수문자를 각 하나 포함한 8자리 이상이여야 합니다.
-              </ErrorMessage>
-            )}
-          </InputSet>
-          <InputSet>
+          </LabelAndInput>
+          {errors?.pw?.type === 'required' && (
+            <ErrorMessage>새 비밀번호를 입력해주세요</ErrorMessage>
+          )}
+          {errors?.pw?.type === 'pattern' && (
+            <ErrorMessage>
+              소문자, 숫자, 특수문자를 각 하나 포함한 8자리 이상이여야 합니다.
+            </ErrorMessage>
+          )}
+        </InputSet>
+        <InputSet>
+          <LabelAndInput>
             <Label htmlFor="pwConfirm">
-              Password Confirm<Required>*</Required>
+              비밀번호 확인<Required>*</Required>
             </Label>
             <InputContainer>
               <Input
                 id="pwConfirm"
                 type={showPwConfirm ? 'text' : 'password'}
-                placeholder="비밀번호를 다시 한 번 입력해 주세요"
+                placeholder="새 비밀번호를 다시 한 번 입력해 주세요"
                 onKeyPress={handleKeyPress}
                 {...register('pwConfirm', {
                   required: true,
@@ -165,53 +192,60 @@ const SignupPage = () => {
                 )}
               </EyeBtn>
             </InputContainer>
-            {errors?.pwConfirm?.type === 'required' && (
-              <ErrorMessage>비밀번호를 한 번 더 입력해주세요</ErrorMessage>
-            )}
-            {errors?.pwConfirm?.type === 'validate' && (
-              <ErrorMessage>비밀번호가 일치하지 않습니다</ErrorMessage>
-            )}
-          </InputSet>
-          <InputSet>
-            <Label htmlFor="nickname">Nickname</Label>
+          </LabelAndInput>
+          {errors?.pwConfirm?.type === 'required' && (
+            <ErrorMessage>새 비밀번호를 한 번 더 입력해주세요</ErrorMessage>
+          )}
+          {errors?.pwConfirm?.type === 'validate' && (
+            <ErrorMessage>새 비밀번호가 일치하지 않습니다</ErrorMessage>
+          )}
+        </InputSet>
+        <InputSet>
+          <LabelAndInput>
+            <Label htmlFor="nickname">닉네임</Label>
             <Input
               id="nickname"
-              placeholder="닉네임을 입력해 주세요"
+              defaultValue={userObj?.displayName}
               onKeyPress={handleKeyPress}
               {...register('nickname', {
                 pattern: nicknameRegex,
               })}
             />
-            {errors?.nickname?.type === 'pattern' && (
-              <ErrorMessage>
-                2자 이상 16자 이하, 영어, 숫자 또는 한글로 구성되어야 합니다.
-              </ErrorMessage>
-            )}
-          </InputSet>
-          <ButtonContainer>
-            <SignupErrorMessage>{signupErrorMessage}</SignupErrorMessage>
-            <LogInBtn type="submit" value={'Sign Up'} />
-            <LinkContainer>
-              이미 가입한 회원이신가요?
-              <LinkBtn onClick={() => navigate('/login')}>Log In</LinkBtn>
-            </LinkContainer>
-          </ButtonContainer>
-        </Form>
-      </SignupLayout>
-    </>
+          </LabelAndInput>
+          {errors?.nickname?.type === 'pattern' && (
+            <ErrorMessage>
+              2자 이상 16자 이하, 영어, 숫자 또는 한글로 구성되어야 합니다.
+            </ErrorMessage>
+          )}
+        </InputSet>
+        <ButtonContainer>
+          <SignupErrorMessage>{signupErrorMessage}</SignupErrorMessage>
+          <LogInBtn type="submit" value={'수정'} />
+        </ButtonContainer>
+      </Form>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={4000}
+        onClose={handleAlertClose}
+        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+      >
+        <Alert severity={alertOption?.severity}>
+          <AlertTitle>{alertOption?.value}</AlertTitle>
+        </Alert>
+      </Snackbar>
+    </Wrapper>
   );
-};
+}
 
-export default SignupPage;
-
-const SignupLayout = styled.div`
-  width: 100%;
-  height: 100%;
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  margin: 60px auto;
+  width: 100%;
+  border: 4px solid black;
+  margin-bottom: 20px;
+  padding: 40px;
 `;
 
 const Form = styled.form`
@@ -220,7 +254,7 @@ const Form = styled.form`
   justify-content: center;
   align-items: center;
   width: 650px;
-  height: 1000px;
+
   margin: 0 auto;
 
   @media screen and (max-width: 767px) {
@@ -228,20 +262,26 @@ const Form = styled.form`
   }
 `;
 
-const HomeBtnContainer = styled.button`
-  margin: 10px 0;
-`;
-
 const InputSet = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 10px;
-  width: 70%;
+  width: 100%;
+  height: 100px;
+`;
+
+const LabelAndInput = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 `;
 
 const Label = styled.label`
   font-weight: 400;
-  font-size: 18px;
+  font-size: 20px;
   padding: 10px;
 `;
 
@@ -265,11 +305,20 @@ const Input = styled.input`
   }
 `;
 
+const Text = styled.p`
+  width: 450px;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: left;
+`;
+
 const ErrorMessage = styled.span`
   font-weight: 400;
   color: ${({ theme }) => theme.color.red};
   font-size: 16px;
   padding-left: 10px;
+  width: 100%;
+  text-align: right;
 `;
 
 const HelpMessage = styled.label`
