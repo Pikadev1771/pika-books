@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import BookCard from 'components/bookCard';
+import BookCard from 'components/BookCard';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { dbService } from 'booksFirebase';
@@ -15,7 +15,6 @@ import {
 
 const Main = () => {
   const navigate = useNavigate();
-  // const bookList = useSelector((state) => state.bookReducer.books);
 
   const [bookList, setBookList] = useState([]);
 

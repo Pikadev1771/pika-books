@@ -42,8 +42,6 @@ const Cart = () => {
     ?.filter((book) => cartItemIds?.indexOf(book.id) !== -1)
     .sort((a, b) => cartItemIds.indexOf(a.id) - cartItemIds.indexOf(b.id));
 
-  console.log('bookInCartList >>', bookInCartList);
-
   // 아이템 선택 변경
   const handleCheckChange = (id, checked) => {
     if (checked) {
@@ -150,6 +148,7 @@ const Cart = () => {
               total={total}
               selectedBookList={selectedBookList}
               checkedItems={checkedItems}
+              handleDelete={handleDelete}
             />
           </CartContainer>
         </Container>

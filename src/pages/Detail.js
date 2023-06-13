@@ -64,7 +64,6 @@ const Detail = () => {
     navigate('/cart');
   };
 
-  console.log(bookData);
   return (
     <>
       <Header />

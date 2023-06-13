@@ -9,7 +9,12 @@ import useUser from 'hooks/useUser';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { storageService } from 'booksFirebase';
-import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import {
+  getDownloadURL,
+  ref,
+  uploadString,
+  deleteObject,
+} from 'firebase/storage';
 import { nanoid } from 'nanoid';
 import moment from 'moment';
 
@@ -57,11 +62,9 @@ const Edit = () => {
 
     // event listner 추가
     reader.onloadend = (finishedEvent) => {
-      console.log(finishedEvent);
       setImgUrl(finishedEvent.currentTarget.result);
     };
     reader.readAsDataURL(imgFile);
-    console.log(imgFile);
   };
 
   const onSubmit = async (form) => {
@@ -72,14 +75,15 @@ const Edit = () => {
       }
     }
 
+    // 이미지 여부에 따른 제출 폼 생성
     if (imgUrl) {
-      const fileRef = ref(storageService, `${userObj.uid}/${nanoid()}`); // 이미지 파일 저장할 ref(폴더) 생성 (유저 id를 기준으로 폴더 생성)
-      const response = await uploadString(fileRef, imgUrl, 'data_url'); // 해당 폴더에 이미지(URL) 추가
-      const fileUrl = await getDownloadURL(response.ref); // 진짜 URL을 다운로드해서 변수에 저장
+      const imgFileRef = ref(storageService, `${userObj.uid}/${nanoid()}`); // 이미지 파일 저장할 ref(문서) 생성 (유저 id를 기준으로 폴더 생성)
+      const response = await uploadString(imgFileRef, imgUrl, 'data_url'); // 해당 문서에 이미지(URL) 추가
+      const imgFileUrl = await getDownloadURL(response.ref); // 진짜 URL을 다운로드해서 변수에 저장
 
       form = {
         ...form,
-        bookImgUrl: fileUrl,
+        bookImgUrl: imgFileUrl,
         editedAt: moment(new Date()).format(),
         price: Number(form.price),
       };
@@ -87,13 +91,16 @@ const Edit = () => {
       form = {
         ...form,
         editedAt: moment(new Date()).format(),
-
         price: Number(form.price),
       };
     }
 
     const bookRef = doc(dbService, 'books', params.id);
     await updateDoc(bookRef, form);
+
+    // 이전 책 이미지 지우기
+    const previousImgFileRef = ref(storageService, bookData.bookImgUrl);
+    await deleteObject(previousImgFileRef);
     navigate('/');
   };
 

@@ -5,6 +5,7 @@ import { authService } from 'booksFirebase';
 import { signOut } from 'firebase/auth';
 import useLogin from 'hooks/useLogin';
 import useUser from 'hooks/useUser';
+import Search from './Search';
 
 export default function Header() {
   const [init, isLoggedIn] = useLogin();
@@ -34,10 +35,7 @@ export default function Header() {
         <img src="/logo/Logo.svg" width="560" height="120" alt="mypage" />
       </Logo>
       <SearchAndMenu>
-        <Search
-          variant="standard"
-          placeholder="책 제목, 저자명으로 검색해보세요"
-        />
+        <Search />
         {init && (
           <>
             {isLoggedIn ? (
@@ -107,27 +105,13 @@ const Logo = styled.div`
 `;
 
 const SearchAndMenu = styled.div`
-  width: 560px;
+  width: 900px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   @media screen and (max-width: 767px) {
     height: 100%;
-  }
-`;
-
-const Search = styled.input`
-  background-color: white;
-  border: 4px solid black;
-  width: 410px;
-  height: 60px;
-  padding: 16px;
-  outline: none;
-  font-size: 16px;
-
-  :focus {
-    outline: none;
   }
 `;
 

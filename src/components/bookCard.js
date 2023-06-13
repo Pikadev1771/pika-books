@@ -9,7 +9,6 @@ export default function BookCard({ book }) {
     <Link to={`/book/${id}`}>
       <CardContainer>
         <BookImg src={`${bookImgUrl || '/books/Book.png'}`} />
-
         <Text>
           <Title>{title}</Title>
           <AuthorAndPublisher>{`${author} / ${publisher}`}</AuthorAndPublisher>

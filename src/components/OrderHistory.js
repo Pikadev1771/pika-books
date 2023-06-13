@@ -26,7 +26,7 @@ export default function OrderHistory() {
     });
   }, []);
 
-  console.log(orderList);
+
 
   return (
     <>

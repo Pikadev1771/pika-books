@@ -11,12 +11,18 @@ import { storageService } from 'booksFirebase';
 import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { nanoid } from 'nanoid';
 import moment from 'moment';
+import useLogin from 'hooks/useLogin';
 
 const AddNew = () => {
   const navigate = useNavigate();
   const userObj = useUser();
+  const [init, isLoggedIn] = useLogin();
 
   const [imgUrl, setImgUrl] = useState(); // 이미지 URL (업로드 작업 할 동안 임시 사용 용도)
+
+  console.log('init', init);
+  console.log('isLoggedIn', init, isLoggedIn);
+  // console.log('isLoading', isLoading);
 
   // react-hook-form
   const {
@@ -38,11 +44,9 @@ const AddNew = () => {
 
     // event listner 추가
     reader.onloadend = (finishedEvent) => {
-      console.log(finishedEvent);
       setImgUrl(finishedEvent.currentTarget.result);
     };
     reader.readAsDataURL(imgFile);
-    console.log(imgFile);
   };
 
   const onSubmit = async (form) => {

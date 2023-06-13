@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import BookCard from 'components/bookCard';
+import BookCard from 'components/BookCard';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { TextField } from '@mui/material';
@@ -14,16 +14,19 @@ import { useNavigate } from 'react-router-dom';
 import { nanoid } from '@reduxjs/toolkit';
 import moment from 'moment';
 
-const OrderTotal = ({ total, selectedBookList, checkedItems }) => {
-  const { numOfItems, quantity, price } = total;
-
-  console.log(total);
-
+const OrderTotal = ({
+  total,
+  selectedBookList,
+  checkedItems,
+  handleDelete,
+}) => {
   const navigate = useNavigate();
 
   const userObj = useUser();
 
   const shippingPrice = 0;
+
+  const { numOfItems, quantity, price } = total;
 
   const handleOrder = async () => {
     const orderId = nanoid();
@@ -46,6 +49,11 @@ const OrderTotal = ({ total, selectedBookList, checkedItems }) => {
     };
 
     await addDoc(collection(dbService, 'order'), orderForm);
+
+    // 장바구니에서 삭제
+    checkedItems.forEach((item) => {
+      handleDelete(item.itemId);
+    });
 
     navigate(`/order/${orderId}`);
   };
