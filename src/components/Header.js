@@ -4,16 +4,16 @@ import { useState } from 'react';
 import { authService } from 'booksFirebase';
 import { signOut } from 'firebase/auth';
 import useLogin from 'hooks/useLogin';
-import useUser from 'hooks/useUser';
 import Search from './Search';
 import { REMOVE_ALL_FROM_CART } from 'store/slice/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function Header() {
   const [init, isLoggedIn] = useLogin();
-  const userObj = useUser();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const cartItems = useSelector((state) => state.cartReducer);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModalHandler = () => {
@@ -53,6 +53,11 @@ export default function Header() {
                       height="40"
                       alt="cart"
                     />
+                    {cartItems.length ? (
+                      <CartBadge>
+                        <span>{cartItems.length}</span>
+                      </CartBadge>
+                    ) : null}
                   </MenuButton>
                 </Link>
                 <MenuButton onClick={openModalHandler}>
@@ -139,6 +144,21 @@ const MenuButton = styled.button`
   border: none;
   border-radius: 10px;
   margin-left: 10px;
+  position: relative;
+`;
+
+const CartBadge = styled.div`
+  ${({ theme }) => theme.flexCenter};
+  background-color: ${({ theme }) => theme.color.blue};
+  color: white;
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  font-size: 15px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0px;
+  left: 35px;
 `;
 
 const ModalBackdrop = styled.div`

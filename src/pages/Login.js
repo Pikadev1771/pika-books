@@ -10,6 +10,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const [loginErrorMessage, setLoginErrorMessage] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   // react-hook-form
   const {
@@ -48,11 +49,14 @@ const LoginPage = () => {
 
   // 로그인 요청
   const onSubmit = async (form) => {
+    setIsLoading(true);
     const { email, pw } = form;
     try {
       const res = await signInWithEmailAndPassword(authService, email, pw);
       navigate('/');
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       setLoginErrorMessage('정확하지 않은 이메일 또는 패스워드입니다');
     }
   };
@@ -126,7 +130,11 @@ const LoginPage = () => {
           </InputSet>
           <ButtonContainer>
             <LoginErrorMessage>{loginErrorMessage}</LoginErrorMessage>
-
+            {isLoading && (
+              <LoadingContainer>
+                <CircularProgress color="inherit" />
+              </LoadingContainer>
+            )}
             <LogInBtn type="submit">Log In</LogInBtn>
             <LinkContainer>
               아직 회원이 아니신가요?
