@@ -65,10 +65,6 @@ const Container = styled.div`
   align-content: center;
   flex-wrap: wrap;
 
-  @media screen and (max-width: 767px) {
-    height: 100%;
-    flex-direction: column;
-  }
 `;
 
 const PageTitle = styled.div`
@@ -79,10 +75,6 @@ const PageTitle = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  @media screen and (max-width: 767px) {
-    justify-content: center;
-    margin-bottom: 15px;
-  }
 `;
 const TitleText = styled.span`
   margin: 10px 0;
@@ -117,7 +109,7 @@ const TabMenu = styled.ul`
   .focused {
     background-color: black;
     color: white;
-    transition: 0.4s; // transition 효과는 쌍방으로
+    transition: 0.4s; 
   }
 
   :hover {

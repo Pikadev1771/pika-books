@@ -1,24 +1,22 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { dbService } from 'booksFirebase';
-import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, deleteDoc } from 'firebase/firestore';
-import useUser from 'hooks/useUser';
+import { doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const OrderConfirml = ({ userObj }) => {
+  const navigate = useNavigate();
   const params = useParams();
   const [order, setOrder] = useState();
-
-  console.log(userObj);
 
   const getOrder = async () => {
     const docRef = doc(dbService, 'order', userObj?.uid);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      console.log(docSnap.data());
       setOrder(
         docSnap
           .data()
@@ -33,8 +31,6 @@ const OrderConfirml = ({ userObj }) => {
     getOrder();
   }, []);
 
-  console.log(order);
-
   return (
     <>
       <Header />
@@ -44,7 +40,7 @@ const OrderConfirml = ({ userObj }) => {
           <OrderDate>{order?.orderedAt?.slice(0, 10)}</OrderDate>
           {order?.orderItems?.map((item) => (
             <ItemBox>
-              <ItemSummary>
+              <ItemSummary onClick={() => navigate(`/book/${item.id}`)}>
                 <Thumbnail>
                   <img
                     src={item.bookImgUrl || '/books/Book.png'}
@@ -180,16 +176,6 @@ const PriceAndQuantity = styled.div`
 const ItemTotalPrice = styled.div`
   font-size: 22px;
   font-weight: 600;
-`;
-
-const Shipping = styled.p`
-  width: 100px;
-  font-size: 16px;
-  border: 2px solid black;
-  padding: 10px;
-  margin-left: 20px;
-  text-align: center;
-  background-color: white;
 `;
 
 const Total = styled.div`

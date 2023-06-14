@@ -1,14 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import Header from 'components/Header';
-import BookCard from 'components/BookCard';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { TextField } from '@mui/material';
 import { dbService } from 'booksFirebase';
-import { addDoc, collection } from 'firebase/firestore';
-import { storageService } from 'booksFirebase';
-import { deleteObject, ref } from 'firebase/storage';
 import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 import { nanoid } from '@reduxjs/toolkit';

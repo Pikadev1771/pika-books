@@ -82,7 +82,6 @@ const LoginPage = () => {
             {errors?.email?.type === 'required' && (
               <HelpMessage>이메일을 입력해주세요</HelpMessage>
             )}
-
             {errors?.email?.type === 'pattern' && (
               <HelpMessage>이메일 양식에 맞게 입력해주세요</HelpMessage>
             )}
@@ -167,10 +166,6 @@ const Form = styled.form`
   width: 650px;
   height: 780px;
   margin: 0 auto;
-
-  @media screen and (max-width: 767px) {
-    width: 90%;
-  }
 `;
 
 const HomeBtnContainer = styled.button`
@@ -201,11 +196,6 @@ const Input = styled.input`
 
   :focus {
     outline: none;
-  }
-
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    font-size: 14px;
   }
 `;
 
@@ -268,11 +258,6 @@ const LogInBtn = styled.button`
     cursor: pointer;
     width: 600px;
   }
-
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    font-size: 16px;
-  }
 `;
 
 const LinkContainer = styled.div`
@@ -289,7 +274,7 @@ const LinkBtn = styled.button`
 
   font-size: 16px;
   font-weight: 600;
-  /* text-decoration: underline; */
+
   :hover {
     cursor: pointer;
   }

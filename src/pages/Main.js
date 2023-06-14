@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import BookCard from 'components/BookCard';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { dbService } from 'booksFirebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
@@ -15,7 +14,10 @@ const Main = () => {
   const [bookList, setBookList] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(dbService, 'books'), orderBy('createdAt'));
+    const q = query(
+      collection(dbService, 'books'),
+      orderBy('createdAt', 'desc')
+    );
     onSnapshot(q, (snapshot) => {
       const bookArr = snapshot.docs.map((book) => ({
         id: book.id,
@@ -64,10 +66,7 @@ const Container = styled.div`
   align-content: center;
   flex-wrap: wrap;
 
-  @media screen and (max-width: 767px) {
-    height: 100%;
-    flex-direction: column;
-  }
+
 `;
 
 const PageTitle = styled.div`
@@ -78,10 +77,6 @@ const PageTitle = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  @media screen and (max-width: 767px) {
-    justify-content: center;
-    margin-bottom: 15px;
-  }
 `;
 const Title = styled.span`
   margin: 10px 0;
@@ -96,14 +91,6 @@ const List = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-
-  @media screen and (max-width: 1100px) {
-    justify-content: center;
-  }
-
-  @media screen and (max-width: 767px) {
-    justify-content: center;
-  }
 `;
 
 const AddBtn = styled.button`

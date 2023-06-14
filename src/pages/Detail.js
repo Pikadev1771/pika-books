@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  ADD_TO_CART,
-  SET_QUANTITY,
-  REMOVE_FROM_CART,
-} from 'store/slice/cartSlice';
+import { useDispatch } from 'react-redux';
+import { ADD_TO_CART, REMOVE_FROM_CART } from 'store/slice/cartSlice';
 import { useParams } from 'react-router-dom';
 import { dbService } from 'booksFirebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
@@ -68,8 +64,6 @@ const Detail = () => {
     dispatch(ADD_TO_CART({ id: params.id, quantity: quantity }));
     navigate('/cart');
   };
-
-  console.log(quantity);
 
   return (
     <>
@@ -151,11 +145,6 @@ const Container = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-
-  @media screen and (max-width: 767px) {
-    height: 100%;
-    flex-direction: column;
-  }
 `;
 
 const BookInfoContainer = styled.div`
@@ -173,12 +162,8 @@ const BookInfo = styled.div`
   align-items: flex-start;
   justify-content: center;
   margin-bottom: 20px;
-
-  @media screen and (max-width: 767px) {
-    justify-content: center;
-    margin-bottom: 15px;
-  }
 `;
+
 const Title = styled.span`
   margin: 10px 0;
   font-size: 38px;
@@ -194,16 +179,6 @@ const AuthorAndPublisher = styled.div`
 
   font-weight: 400;
   font-size: 24px;
-
-  @media screen and (max-width: 1250px) {
-    font-size: 12px;
-    -webkit-line-clamp: 1;
-  }
-
-  @media screen and (max-width: 767px) {
-    font-size: 12px;
-    -webkit-line-clamp: 2;
-  }
 `;
 
 const Menu = styled.div`

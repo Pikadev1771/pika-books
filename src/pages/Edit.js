@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { dbService } from 'booksFirebase';
-import { addDoc, collection } from 'firebase/firestore';
 import useUser from 'hooks/useUser';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -67,7 +66,10 @@ const Edit = () => {
     reader.readAsDataURL(imgFile);
   };
 
+
   const onSubmit = async (form) => {
+    const previousImgUrl = bookData.bookImgUrl;
+
     // form 초기값('') 수정
     for (let prop in form) {
       if (!form[prop].length) {
@@ -99,8 +101,10 @@ const Edit = () => {
     await updateDoc(bookRef, form);
 
     // 이전 책 이미지 지우기
-    const previousImgFileRef = ref(storageService, bookData.bookImgUrl);
-    await deleteObject(previousImgFileRef);
+    if (bookData.bookImgUrl) {
+      const previousImgFileRef = ref(storageService, previousImgUrl);
+      await deleteObject(previousImgFileRef);
+    }
     navigate('/');
   };
 
@@ -211,11 +215,6 @@ const Container = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-
-  @media screen and (max-width: 767px) {
-    height: 100%;
-    flex-direction: column;
-  }
 `;
 
 const PageTitle = styled.div`
@@ -226,10 +225,6 @@ const PageTitle = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  @media screen and (max-width: 767px) {
-    justify-content: center;
-    margin-bottom: 15px;
-  }
 `;
 const Title = styled.span`
   margin: 10px 0;
@@ -274,10 +269,6 @@ const Form = styled.form`
   align-items: center;
   width: 100%;
   margin-left: 120px;
-
-  @media screen and (max-width: 767px) {
-    width: 90%;
-  }
 `;
 
 const InputSet = styled.div`
@@ -307,10 +298,6 @@ const Input = styled.input`
     outline: none;
   }
 
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    font-size: 14px;
-  }
 `;
 
 const ErrorMessage = styled.span`
@@ -318,27 +305,6 @@ const ErrorMessage = styled.span`
   color: ${({ theme }) => theme.color.red};
   font-size: 16px;
   padding-left: 10px;
-`;
-
-const HelpMessage = styled.label`
-  font-weight: 400;
-  color: ${({ theme }) => theme.color.red};
-  font-size: 16px;
-  padding: 12px 0 4px 10px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
-`;
-
-const SubmitErrorMessage = styled.p`
-  color: ${({ theme }) => theme.color.red};
-  margin: 6px 0;
-  font-weight: 400;
-  font-size: 16px;
 `;
 
 const SubmitBtn = styled.button`
@@ -357,10 +323,6 @@ const SubmitBtn = styled.button`
     width: 600px;
   }
 
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    font-size: 16px;
-  }
 `;
 
 const Required = styled.span`

@@ -4,14 +4,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from 'booksFirebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import useUser from 'hooks/useUser';
-import { doc, setDoc } from 'firebase/firestore';
-import { dbService } from 'booksFirebase';
 
 const SignupPage = () => {
   const navigate = useNavigate();
-
-  const userObj = useUser();
 
   const [signupErrorMessage, setSignupErrorMessage] = useState();
 
@@ -48,15 +43,12 @@ const SignupPage = () => {
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
   const nicknameRegex = /^(?=.*[a-z0-9가-힣])[a-z0-9가-힣]{2,16}$/;
 
-  console.log(userObj);
-
   // 회원가입 요청
   const onSubmit = async (form) => {
     const { email, pw, nickname } = form;
     try {
       const res = await createUserWithEmailAndPassword(authService, email, pw);
       await updateProfile(authService.currentUser, { displayName: nickname });
-      console.log(userObj);
       // navigate('/');
     } catch (error) {
       if (error.code === `auth/email-already-in-use`) {
@@ -88,7 +80,6 @@ const SignupPage = () => {
             {errors?.email?.type === 'required' && (
               <ErrorMessage>이메일을 입력해주세요</ErrorMessage>
             )}
-
             {errors?.email?.type === 'pattern' && (
               <ErrorMessage>
                 2자 이상 16자 이하, 영어, 숫자 또는 한글로 구성되어야 합니다.
@@ -230,10 +221,6 @@ const Form = styled.form`
   width: 650px;
   height: 1000px;
   margin: 0 auto;
-
-  @media screen and (max-width: 767px) {
-    width: 90%;
-  }
 `;
 
 const HomeBtnContainer = styled.button`
@@ -266,11 +253,6 @@ const Input = styled.input`
   :focus {
     outline: none;
   }
-
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    font-size: 14px;
-  }
 `;
 
 const ErrorMessage = styled.span`
@@ -278,13 +260,6 @@ const ErrorMessage = styled.span`
   color: ${({ theme }) => theme.color.red};
   font-size: 16px;
   padding-left: 10px;
-`;
-
-const HelpMessage = styled.label`
-  font-weight: 400;
-  color: ${({ theme }) => theme.color.red};
-  font-size: 16px;
-  padding: 12px 0 4px 10px;
 `;
 
 const InputContainer = styled.div`
@@ -334,11 +309,6 @@ const SignupBtn = styled.button`
   :hover {
     cursor: pointer;
     width: 600px;
-  }
-
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    font-size: 16px;
   }
 `;
 

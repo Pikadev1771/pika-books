@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-
 import useUser from 'hooks/useUser';
 import { authService } from 'booksFirebase';
-
 import { updatePassword, updateProfile } from 'firebase/auth';
-
 import Snackbar from '@mui/material/Snackbar';
-
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
@@ -69,10 +65,10 @@ export default function MyInfo() {
     }
 
     try {
+      await updatePassword(authService.currentUser, form.pw);
       await updateProfile(authService.currentUser, {
         displayName: form.nickname,
       });
-      await updatePassword(authService.currentUser, form.pw);
       setAlertOpen(true);
       setAlertOption({
         severity: 'success',
@@ -82,7 +78,7 @@ export default function MyInfo() {
       setAlertOpen(true);
       setAlertOption({
         severity: 'error',
-        value: '내 정보 수정을 실패했습니다. 잠시 후 다시 시도해주세요',
+        value: '내 정보 수정에 실패했습니다. 잠시 후 다시 시도해주세요',
       });
     }
   };

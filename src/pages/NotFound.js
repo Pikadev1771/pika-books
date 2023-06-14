@@ -1,9 +1,5 @@
 import styled from 'styled-components';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from 'booksFirebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const NotFound = () => {
   const navigate = useNavigate();

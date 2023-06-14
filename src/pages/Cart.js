@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_QUANTITY, REMOVE_FROM_CART } from 'store/slice/cartSlice';
-import useUser from 'hooks/useUser';
-import { useNavigate } from 'react-router-dom';
 
 import CartItem from 'components/CartItem';
 import OrderTotal from 'components/OrderTotal';
@@ -183,11 +181,6 @@ const Container = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-
-  @media screen and (max-width: 767px) {
-    height: 100%;
-    flex-direction: column;
-  }
 `;
 
 const PageTitle = styled.div`
@@ -198,10 +191,6 @@ const PageTitle = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  @media screen and (max-width: 767px) {
-    justify-content: center;
-    margin-bottom: 15px;
-  }
 `;
 const TitleText = styled.span`
   margin: 10px 0;

@@ -97,15 +97,6 @@ const HeaderContainer = styled.div`
   z-index: '10';
   position: relative;
   background-color: inherit;
-
-  @media screen and (max-width: 767px) {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-  }
 `;
 
 const Logo = styled.div`
@@ -119,10 +110,6 @@ const SearchAndMenu = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  @media screen and (max-width: 767px) {
-    height: 100%;
-  }
 `;
 
 const LoginBtn = styled.button`
@@ -189,15 +176,6 @@ const ModalBox = styled.div.attrs((props) => ({
   top: 140px;
   right: 30px;
   padding: 10px 0;
-
-  @media screen and (max-width: 767px) {
-    flex-direction: row;
-    width: 55vw;
-    height: 50px;
-    top: 240px;
-    right: 30px;
-    padding: 10px 0;
-  }
 `;
 
 const ModalMenu = styled.button`

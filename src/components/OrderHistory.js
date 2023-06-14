@@ -1,21 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Header from 'components/Header';
-import { useDispatch, useSelector } from 'react-redux';
-import { SET_QUANTITY, REMOVE_FROM_CART } from 'store/slice/cartSlice';
-import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
-
-import CartItem from 'components/CartItem';
-import OrderTotal from 'components/OrderTotal';
 import { dbService } from 'booksFirebase';
-import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
-import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function OrderHistory({ userObj }) {
+  const navigate = useNavigate();
   const [orderList, setOrderList] = useState();
-
-  console.log(userObj);
 
   const getOrderList = async () => {
     const docRef = doc(dbService, 'order', userObj?.uid);
@@ -35,43 +26,49 @@ export default function OrderHistory({ userObj }) {
   return (
     <>
       <Wrapper>
-        {orderList?.map((order) => (
-          <Order>
-            <OrderDate>{order.orderedAt.slice(0, 10)}</OrderDate>
-            {order?.orderItems?.map((item) => (
-              <ItemBox>
-                <ItemSummary>
-                  <Thumbnail>
-                    <img
-                      src={item.bookImgUrl || '/books/Book.png'}
-                      width={120}
-                      height={150}
-                      alt="bookImg"
-                    />
-                  </Thumbnail>
-                  <ItemInfo>
-                    <BookTitle>{item.title}</BookTitle>
-                    <NumOfBooks>{`수량: ${item.quantity}개`}</NumOfBooks>
-                  </ItemInfo>
-                </ItemSummary>
-                <ItemAdjustment>
-                  <PriceAndQuantity>
-                    <ItemTotalPrice>
-                      {(item.price * item.quantity).toLocaleString()}원
-                    </ItemTotalPrice>
-                    <Shipping>배송 중</Shipping>
-                  </PriceAndQuantity>
-                </ItemAdjustment>
-              </ItemBox>
-            ))}
-            <Total>
-              <SubText>
-                상품 금액 {order.totalPrice.toLocaleString()}원 + 배송비 0원 =
-              </SubText>
-              총 결제 금액 {order.totalPrice.toLocaleString()}원
-            </Total>
-          </Order>
-        ))}
+        {orderList ? (
+          orderList?.map((order) => (
+            <Order>
+              <OrderDate>{order.orderedAt.slice(0, 10)}</OrderDate>
+              {order?.orderItems?.map((item) => (
+                <ItemBox>
+                  <ItemSummary onClick={() => navigate(`/book/${item.id}`)}>
+                    <Thumbnail>
+                      <img
+                        src={item.bookImgUrl || '/books/Book.png'}
+                        width={100}
+                        height={130}
+                        alt="bookImg"
+                      />
+                    </Thumbnail>
+                    <ItemInfo>
+                      <BookTitle>{item.title}</BookTitle>
+                      <NumOfBooks>{`수량: ${item.quantity}개`}</NumOfBooks>
+                    </ItemInfo>
+                  </ItemSummary>
+                  <ItemAdjustment>
+                    <PriceAndQuantity>
+                      <ItemTotalPrice>
+                        {(item.price * item.quantity).toLocaleString()}원
+                      </ItemTotalPrice>
+                      <Shipping>배송 중</Shipping>
+                    </PriceAndQuantity>
+                  </ItemAdjustment>
+                </ItemBox>
+              ))}
+              <Total>
+                <SubText>
+                  상품 금액 {order.totalPrice.toLocaleString()}원 + 배송비 0원 =
+                </SubText>
+                총 결제 금액 {order.totalPrice.toLocaleString()}원
+              </Total>
+            </Order>
+          ))
+        ) : (
+          <NoItemBox>
+            <p>주문 내역이 없습니다</p>
+          </NoItemBox>
+        )}
       </Wrapper>
     </>
   );
@@ -142,17 +139,14 @@ const ItemInfo = styled.div`
 `;
 
 const BookTitle = styled.span`
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
-
-  text-overflow: ellipsis;
-  overflow: hidden;
-  word-break: break-word;
-
   display: -webkit-box;
-  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  line-height: 1.2;
 `;
 
 const NumOfBooks = styled.span`
@@ -171,8 +165,9 @@ const PriceAndQuantity = styled.div`
 `;
 
 const ItemTotalPrice = styled.div`
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
+  width: 100px;
 `;
 
 const Shipping = styled.p`
@@ -201,4 +196,14 @@ const SubText = styled.span`
   font-weight: 400;
   font-size: 20px;
   margin-right: 6px;
+`;
+
+const NoItemBox = styled.div`
+  ${({ theme }) => theme.flexCenter};
+  padding: 20px;
+  margin-bottom: 20px;
+  height: 500px;
+  font-size: 22px;
+  border: 4px solid black;
+  width: 100%;
 `;

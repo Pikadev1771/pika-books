@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { useNavigate } from 'react-router-dom';
@@ -11,12 +11,10 @@ import { storageService } from 'booksFirebase';
 import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { nanoid } from 'nanoid';
 import moment from 'moment';
-import useLogin from 'hooks/useLogin';
 
 const AddNew = () => {
   const navigate = useNavigate();
   const userObj = useUser();
-  const [init, isLoggedIn] = useLogin();
 
   const [imgUrl, setImgUrl] = useState(); // 이미지 URL (업로드 작업 할 동안 임시 사용 용도)
 
@@ -89,7 +87,6 @@ const AddNew = () => {
                 onChange={handleFileChange}
               />
             </ImgBox>
-
             <Form onSubmit={handleSubmit(onSubmit)}>
               <InputSet>
                 <Label htmlFor="title">
@@ -144,6 +141,7 @@ const AddNew = () => {
                 <Input
                   id="price"
                   type="number"
+                  min={0}
                   onKeyPress={handleKeyPress}
                   {...register('price', {
                     required: true,
@@ -179,11 +177,6 @@ const Container = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-
-  @media screen and (max-width: 767px) {
-    height: 100%;
-    flex-direction: column;
-  }
 `;
 
 const PageTitle = styled.div`
@@ -194,11 +187,8 @@ const PageTitle = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  @media screen and (max-width: 767px) {
-    justify-content: center;
-    margin-bottom: 15px;
-  }
 `;
+
 const Title = styled.span`
   margin: 10px 0;
   font-size: 30px;
@@ -242,10 +232,6 @@ const Form = styled.form`
   align-items: center;
   width: 100%;
   margin-left: 120px;
-
-  @media screen and (max-width: 767px) {
-    width: 90%;
-  }
 `;
 
 const InputSet = styled.div`
@@ -288,27 +274,6 @@ const ErrorMessage = styled.span`
   padding-left: 10px;
 `;
 
-const HelpMessage = styled.label`
-  font-weight: 400;
-  color: ${({ theme }) => theme.color.red};
-  font-size: 16px;
-  padding: 12px 0 4px 10px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
-`;
-
-const SubmitErrorMessage = styled.p`
-  color: ${({ theme }) => theme.color.red};
-  margin: 6px 0;
-  font-weight: 400;
-  font-size: 16px;
-`;
-
 const SubmitBtn = styled.button`
   width: 100%;
   height: 70px;
@@ -323,11 +288,6 @@ const SubmitBtn = styled.button`
   :hover {
     cursor: pointer;
     width: 600px;
-  }
-
-  @media screen and (max-width: 767px) {
-    width: 100%;
-    font-size: 16px;
   }
 `;
 

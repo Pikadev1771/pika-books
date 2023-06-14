@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { css } from 'styled-components';
 
 export default function BookCard({ book }) {
   const { id, title, author, publisher, bookImgUrl, price } = book;
@@ -45,21 +44,6 @@ const Text = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  @media screen and (max-width: 1250px) {
-    width: 100%;
-    height: 60px;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  @media screen and (max-width: 767px) {
-    width: 80vw;
-    height: 140px;
-    flex-direction: column;
-    justify-content: center;
-    padding: 4px;
-  }
 `;
 
 const Title = styled.p`
@@ -73,20 +57,8 @@ const Title = styled.p`
   word-break: break-word;
 
   display: -webkit-box;
-  -webkit-line-clamp: 1; // 원하는 라인수
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
-
-  @media screen and (max-width: 1250px) {
-    font-size: 14px;
-    width: 70px;
-    text-align: left;
-  }
-
-  @media screen and (max-width: 767px) {
-    width: 100px;
-    text-align: center;
-    font-size: 14px;
-  }
 `;
 
 const AuthorAndPublisher = styled.div`
@@ -97,16 +69,6 @@ const AuthorAndPublisher = styled.div`
 
   font-weight: 400;
   font-size: 18px;
-
-  @media screen and (max-width: 1250px) {
-    font-size: 12px;
-    -webkit-line-clamp: 1;
-  }
-
-  @media screen and (max-width: 767px) {
-    font-size: 12px;
-    -webkit-line-clamp: 2;
-  }
 `;
 
 const Price = styled.div`
@@ -114,14 +76,4 @@ const Price = styled.div`
   margin: 10px;
   font-size: 20px;
   font-weight: 600;
-
-  @media screen and (max-width: 1250px) {
-    font-size: 12px;
-    -webkit-line-clamp: 1;
-  }
-
-  @media screen and (max-width: 767px) {
-    font-size: 12px;
-    -webkit-line-clamp: 2;
-  }
 `;
