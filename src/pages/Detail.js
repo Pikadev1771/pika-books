@@ -10,12 +10,14 @@ import { storageService } from 'booksFirebase';
 import { deleteObject, ref } from 'firebase/storage';
 import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
+import useLogin from 'hooks/useLogin';
 
 const Detail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const params = useParams();
   const userObj = useUser();
+  const [init, isLoggedIn] = useLogin();
 
   const [bookData, setBookData] = useState();
   const [quantity, setQuantity] = useState(1);
@@ -60,9 +62,15 @@ const Detail = () => {
     setQuantity(Number(e.target.value));
   }, []);
 
+  console.log(isLoggedIn);
+
   const handleAddCart = () => {
-    dispatch(ADD_TO_CART({ id: params.id, quantity: quantity }));
-    navigate('/cart');
+    if (isLoggedIn) {
+      dispatch(ADD_TO_CART({ id: params.id, quantity: quantity }));
+      navigate('/cart');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
