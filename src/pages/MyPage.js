@@ -64,7 +64,6 @@ const Container = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-
 `;
 
 const PageTitle = styled.div`
@@ -109,7 +108,7 @@ const TabMenu = styled.ul`
   .focused {
     background-color: black;
     color: white;
-    transition: 0.4s; 
+    transition: 0.4s;
   }
 
   :hover {

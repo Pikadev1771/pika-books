@@ -145,7 +145,7 @@ const ItemInfo = styled.div`
 `;
 
 const BookTitle = styled.span`
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
 
@@ -156,6 +156,7 @@ const BookTitle = styled.span`
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
+  line-height: 1.2;
 `;
 
 const NumOfBooks = styled.span`

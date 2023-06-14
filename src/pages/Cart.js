@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { useDispatch, useSelector } from 'react-redux';
@@ -43,36 +43,48 @@ const Cart = () => {
     .sort((a, b) => cartItemIds.indexOf(a.id) - cartItemIds.indexOf(b.id));
 
   // 아이템 선택 변경
-  const handleCheckChange = (id, checked) => {
-    if (checked) {
-      setCheckedItemIds([...checkedItemIds, id]);
-    } else {
-      setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
-    }
-  };
+  const handleCheckChange = useCallback(
+    (id, checked) => {
+      if (checked) {
+        setCheckedItemIds([...checkedItemIds, id]);
+      } else {
+        setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
+      }
+    },
+    [checkedItemIds]
+  );
 
   // 아이템 전체 선택
-  const handleAllCheck = (checked) => {
-    if (checked) {
-      setCheckedItemIds(cartItemIds);
-    } else {
-      setCheckedItemIds([]);
-    }
-  };
+  const handleAllCheck = useCallback(
+    (checked) => {
+      if (checked) {
+        setCheckedItemIds(cartItemIds);
+      } else {
+        setCheckedItemIds([]);
+      }
+    },
+    [cartItemIds]
+  );
 
   // 아이템 수량 변경
-  const handleQuantityChange = (id, quantity) => {
-    dispatch(SET_QUANTITY({ id, quantity }));
-  };
+  const handleQuantityChange = useCallback(
+    (id, quantity) => {
+      dispatch(SET_QUANTITY({ id, quantity }));
+    },
+    [dispatch]
+  );
 
   // 아이템 삭제
-  const handleDelete = (id) => {
-    setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
-    dispatch(REMOVE_FROM_CART({ id }));
-  };
+  const handleDelete = useCallback(
+    (id) => {
+      setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
+      dispatch(REMOVE_FROM_CART({ id }));
+    },
+    [checkedItemIds, dispatch]
+  );
 
   // 선택한 아이템 total 정보
-  const getTotal = () => {
+  const getTotal = useCallback(() => {
     let total = {
       numOfItems: checkedItemIds?.length,
       quantity: 0,
@@ -94,7 +106,8 @@ const Cart = () => {
       }
     }
     return total;
-  };
+  }, [bookList, cartItemIds, cartItems, checkedItemIds]);
+
   const total = getTotal(); // 주문 합계 관련 데이터
 
   // 선택된 도서 목록
