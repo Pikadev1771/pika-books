@@ -12,7 +12,7 @@ const cartSlice = createSlice({
       if (state.filter((item) => item.itemId === id).length) {
         // 이미 장바구니에 있으면
         const idx = state.map((item) => item.itemId).indexOf(id); // 장바구니 내 인덱스
-        state[idx].quantity = state[idx].quantity + quantity;
+        state[idx].quantity += quantity;
       } else {
         // 아직 없으면
         state = [{ itemId: id, quantity: quantity }, ...state];
@@ -21,12 +21,10 @@ const cartSlice = createSlice({
     },
     REMOVE_FROM_CART: (state, action) => {
       const { id } = action.payload;
-      state = state.filter((item) => item.itemId !== id);
-      return state;
+      return state.filter((item) => item.itemId !== id);
     },
     REMOVE_ALL_FROM_CART: (state) => {
-      state = [];
-      return state;
+      return [];
     },
     SET_QUANTITY: (state, action) => {
       const { id, quantity } = action.payload;

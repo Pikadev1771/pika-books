@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { authService } from 'booksFirebase';
 import { signOut } from 'firebase/auth';
 import useLogin from 'hooks/useLogin';
@@ -8,7 +8,7 @@ import Search from './Search';
 import { REMOVE_ALL_FROM_CART } from 'store/slice/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-export default function Header() {
+const Header = () => {
   const [init, isLoggedIn] = useLogin();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -84,7 +84,9 @@ export default function Header() {
       ) : null}
     </HeaderContainer>
   );
-}
+};
+
+export default React.memo(Header);
 
 const HeaderContainer = styled.div`
   display: flex;

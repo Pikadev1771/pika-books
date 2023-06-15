@@ -168,4 +168,4 @@ const DeleteBtn = styled(Button)`
   margin-left: 12px;
 `;
 
-export default CartItem;
+export default React.memo(CartItem);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Header from 'components/Header';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,16 +13,7 @@ const Cart = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
 
-  // 카트 내 전체 아이템 (ID & 수량 정보)
-  const cartItems = useSelector((state) => state.cartReducer);
-
-  // 카트 내 전체 아이템 ID 모음
-  const cartItemIds = cartItems?.map((item) => item.itemId);
-
-  // 선택된 아이템 ID 모음 (초기값은 전체 선택 상태)
-  const [checkedItemIds, setCheckedItemIds] = useState(cartItemIds);
-
-  // 도서 목록
+  // 전체 도서 목록
   const [bookList, setBookList] = useState([]);
 
   useEffect(() => {
@@ -37,34 +28,63 @@ const Cart = () => {
     setIsLoading(false);
   }, []);
 
-  // 카트 내 도서 목록 (장바구니 추가 순 정렬)
-  const bookInCartList = bookList
-    ?.filter((book) => cartItemIds?.indexOf(book.id) !== -1)
-    .sort((a, b) => cartItemIds.indexOf(a.id) - cartItemIds.indexOf(b.id));
+  // 카트 내 전체 아이템 (ID & 수량 )
+  const cartItems = useSelector((state) => state.cartReducer);
 
-  // 아이템 선택 변경
-  const handleCheckChange = useCallback(
-    (id, checked) => {
-      if (checked) {
-        setCheckedItemIds([...checkedItemIds, id]);
-      } else {
-        setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
-      }
-    },
-    [checkedItemIds]
+  // 카트 내 전체 아이템 ID 모음
+  const cartItemIds = useMemo(
+    () => cartItems?.map((item) => item.itemId),
+    [cartItems]
+  );
+
+  // 카트 내 도서 + 수량 정보
+  const cartBooksData = useMemo(
+    () =>
+      bookList
+        .filter((book) => cartItemIds?.indexOf(book.id) !== -1)
+        .sort((a, b) => cartItemIds.indexOf(a.id) - cartItemIds.indexOf(b.id))
+        .map((book) => {
+          for (let item of cartItems) {
+            if (item.itemId === book.id) {
+              return { ...book, quantity: item.quantity };
+            }
+          }
+        }),
+    [bookList, cartItemIds, cartItems]
+  );
+
+  // 선택된 아이템 ID 모음 (초기값은 전체 선택 상태)
+  const [checkedItemIds, setCheckedItemIds] = useState(cartItemIds);
+
+  // 선택된 도서 + 수량 정보
+  const checkedBooksData = useMemo(
+    () =>
+      cartBooksData.filter((book) => checkedItemIds.indexOf(book.id) !== -1),
+    [cartBooksData, checkedItemIds]
   );
 
   // 아이템 전체 선택
   const handleAllCheck = useCallback(
     (checked) => {
       if (checked) {
-        setCheckedItemIds(cartItemIds);
+        setCheckedItemIds((checkedItemIds) => cartItemIds);
       } else {
-        setCheckedItemIds([]);
+        setCheckedItemIds((checkedItemIds) => []);
       }
     },
     [cartItemIds]
   );
+
+  // 아이템 선택 변경
+  const handleCheckChange = useCallback((id, checked) => {
+    if (checked) {
+      setCheckedItemIds((checkedItemIds) => [...checkedItemIds, id]);
+    } else {
+      setCheckedItemIds((checkedItemIds) =>
+        checkedItemIds?.filter((itemId) => itemId !== id)
+      );
+    }
+  }, []);
 
   // 아이템 수량 변경
   const handleQuantityChange = useCallback(
@@ -77,47 +97,12 @@ const Cart = () => {
   // 아이템 삭제
   const handleDelete = useCallback(
     (id) => {
-      setCheckedItemIds(checkedItemIds?.filter((itemId) => itemId !== id));
+      setCheckedItemIds((checkedItemIds) =>
+        checkedItemIds?.filter((itemId) => itemId !== id)
+      );
       dispatch(REMOVE_FROM_CART({ id }));
     },
-    [checkedItemIds, dispatch]
-  );
-
-  // 선택한 아이템 total 정보
-  const getTotal = useCallback(() => {
-    let total = {
-      numOfItems: checkedItemIds?.length,
-      quantity: 0,
-      price: 0,
-    };
-
-    // 카트 내 아이템들을 하나씩 순회
-    for (let i = 0; i < cartItemIds.length; i++) {
-      if (checkedItemIds?.indexOf(cartItemIds[i]) !== -1) {
-        // 선택된 아이템이면
-        let itemQuantity = cartItems[i]?.quantity; // 해당 아이템 수량
-        let itemPrice = bookList?.filter(
-          // 해당 아이템 가격
-          (book) => book.id === cartItems[i]?.itemId
-        )[0]?.price;
-
-        total.price += itemQuantity * itemPrice;
-        total.quantity += itemQuantity;
-      }
-    }
-    return total;
-  }, [bookList, cartItemIds, cartItems, checkedItemIds]);
-
-  const total = getTotal(); // 주문 합계 관련 데이터
-
-  // 선택된 도서 목록
-  const selectedBookList = bookInCartList.filter(
-    (book) => checkedItemIds.indexOf(book.id) !== -1
-  );
-
-  // 선택된 아이템 (ID & 수량 정보)
-  const checkedItems = cartItems.filter(
-    (item) => checkedItemIds.indexOf(item.itemId) !== -1
+    [dispatch]
   );
 
   return (
@@ -128,7 +113,7 @@ const Cart = () => {
           <PageTitle>
             <TitleText>장바구니</TitleText>
           </PageTitle>
-          {bookInCartList.length ? (
+          {cartBooksData.length ? (
             <CheckAll>
               <input
                 type="checkbox"
@@ -142,11 +127,8 @@ const Cart = () => {
           ) : null}
           <CartContainer>
             <ItemsContainer>
-              {bookInCartList.length ? (
-                bookInCartList.map((book) => {
-                  const quantity = cartItems.filter(
-                    (item) => item.itemId === book.id
-                  )[0].quantity;
+              {cartBooksData.length ? (
+                cartBooksData.map((book) => {
                   return (
                     <CartItem
                       key={book.id}
@@ -155,7 +137,7 @@ const Cart = () => {
                       handleQuantityChange={handleQuantityChange}
                       handleDelete={handleDelete}
                       checkedItemIds={checkedItemIds}
-                      quantity={quantity}
+                      quantity={book.quantity}
                     />
                   );
                 })
@@ -166,9 +148,7 @@ const Cart = () => {
               )}
             </ItemsContainer>
             <OrderTotal
-              total={total}
-              selectedBookList={selectedBookList}
-              checkedItems={checkedItems}
+              checkedBooksData={checkedBooksData}
               handleDelete={handleDelete}
             />
           </CartContainer>

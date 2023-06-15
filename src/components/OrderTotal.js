@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { dbService } from 'booksFirebase';
 import useUser from 'hooks/useUser';
@@ -7,37 +7,29 @@ import { nanoid } from '@reduxjs/toolkit';
 import moment from 'moment';
 import { doc, setDoc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
-const OrderTotal = ({
-  total,
-  selectedBookList,
-  checkedItems,
-  handleDelete,
-}) => {
+const OrderTotal = ({ checkedBooksData, handleDelete }) => {
   const navigate = useNavigate();
 
   const userObj = useUser();
 
   const shippingPrice = 0;
 
-  const { numOfItems, quantity, price } = total;
+  const totalQuantity = checkedBooksData.reduce(
+    (acc, cur) => acc + cur.quantity,
+    0
+  );
+
+  const totalPrice = checkedBooksData.reduce((acc, cur) => acc + cur.price, 0);
 
   const handleOrder = async () => {
     const orderId = nanoid();
-    // 도서 정보 + 수량 정보
-    const orderItems = selectedBookList.map((book) => {
-      for (let item of checkedItems) {
-        if (item.itemId === book.id) {
-          return { ...book, quantity: item.quantity };
-        }
-      }
-    });
 
     const orderForm = {
       orderId: orderId,
       userId: userObj.uid,
       orderedAt: moment(new Date()).format(),
-      orderItems: orderItems,
-      totalPrice: price,
+      orderItems: checkedBooksData,
+      totalPrice: totalPrice,
     };
 
     const userDocRef = doc(dbService, 'order', `${userObj?.uid}`);
@@ -55,8 +47,8 @@ const OrderTotal = ({
     }
 
     // 장바구니에서 주문 상품 삭제
-    checkedItems.forEach((item) => {
-      handleDelete(item.itemId);
+    checkedBooksData.forEach((item) => {
+      handleDelete(item.id);
     });
 
     navigate(`/order/${orderId}`);
@@ -67,11 +59,11 @@ const OrderTotal = ({
       <TotalTitle>주문 합계</TotalTitle>
       <ItemAndQuantity>
         <span>주문 상품</span>
-        <span>{`총 ${numOfItems}종 ${quantity}권`}</span>
+        <span>{`총 ${checkedBooksData.length}종 ${totalQuantity}권`}</span>
       </ItemAndQuantity>
       <Calculation>
         <span>상품 금액</span>
-        <span>{price.toLocaleString()}원</span>
+        <span>{totalPrice.toLocaleString()}원</span>
       </Calculation>
       <Calculation>
         <span>배송료</span>
@@ -81,9 +73,9 @@ const OrderTotal = ({
       <TotalPriceAndOrderBtn>
         <TotalPrice>
           <span>결제 예정 금액</span>
-          <span>{price.toLocaleString()}원</span>
+          <span>{totalPrice.toLocaleString()}원</span>
         </TotalPrice>
-        <OrderBtn disabled={!quantity} onClick={handleOrder}>
+        <OrderBtn disabled={!totalQuantity} onClick={handleOrder}>
           주문하기
         </OrderBtn>
       </TotalPriceAndOrderBtn>
@@ -161,4 +153,4 @@ const OrderBtn = styled.button`
   font-weight: 600;
 `;
 
-export default OrderTotal;
+export default React.memo(OrderTotal);

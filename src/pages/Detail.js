@@ -62,8 +62,6 @@ const Detail = () => {
     setQuantity(Number(e.target.value));
   }, []);
 
-  console.log(isLoggedIn);
-
   const handleAddCart = () => {
     if (isLoggedIn) {
       dispatch(ADD_TO_CART({ id: params.id, quantity: quantity }));
