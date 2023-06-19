@@ -73,7 +73,7 @@ const Filter = styled.div`
   flex-direction: column;
   align-items: center;
   position: relative;
-  width: 740px;
+  width: 560px;
   z-index: 10;
 `;
 

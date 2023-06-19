@@ -13,6 +13,7 @@ const CartItem = ({
   quantity,
 }) => {
   const navigate = useNavigate();
+
   return (
     <CartItemBox>
       <ItemSummary>

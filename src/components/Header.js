@@ -95,6 +95,7 @@ const HeaderContainer = styled.div`
 
   max-width: 2400px;
   height: 200px;
+  margin: 0 auto;
   padding: 0 60px;
   z-index: '10';
   position: relative;
@@ -108,7 +109,7 @@ const Logo = styled.div`
 `;
 
 const SearchAndMenu = styled.div`
-  width: 900px;
+  width: 700px;
   display: flex;
   justify-content: space-between;
   align-items: center;
