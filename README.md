@@ -1,4 +1,4 @@
-## ✨ Penta Books
+## ✨ Pika Books
 
 ### 설치하기
 
