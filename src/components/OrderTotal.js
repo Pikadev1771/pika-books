@@ -19,7 +19,10 @@ const OrderTotal = ({ checkedBooksData, handleDelete }) => {
     0
   );
 
-  const totalPrice = checkedBooksData.reduce((acc, cur) => acc + cur.price, 0);
+  const totalPrice = checkedBooksData.reduce(
+    (acc, cur) => acc + cur.price * cur.quantity,
+    0
+  );
 
   const handleOrder = async () => {
     const orderId = nanoid();
