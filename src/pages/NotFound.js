@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-const NotFound = () => {
+export default function NotFound() {
   const navigate = useNavigate();
 
   return (
@@ -12,7 +12,7 @@ const NotFound = () => {
       <NotFoundText>존재하지 않는 페이지입니다</NotFoundText>
     </Wrapper>
   );
-};
+}
 
 const Wrapper = styled.div`
   display: flex;
@@ -33,4 +33,3 @@ const Logo = styled.div`
 const NotFoundText = styled.p`
   font-size: 26px;
 `;
-export default NotFound;

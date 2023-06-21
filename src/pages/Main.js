@@ -7,7 +7,7 @@ import { dbService } from 'booksFirebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import useLogin from 'hooks/useLogin';
 
-const Main = () => {
+export default function Main() {
   const navigate = useNavigate();
   const [init, isLoggedIn] = useLogin();
 
@@ -47,7 +47,7 @@ const Main = () => {
       </Wrapper>
     </>
   );
-};
+}
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flexCenter};
@@ -65,8 +65,6 @@ const Container = styled.div`
   align-items: center;
   align-content: center;
   flex-wrap: wrap;
-
-
 `;
 
 const PageTitle = styled.div`
@@ -102,5 +100,3 @@ const AddBtn = styled.button`
   font-size: 20px;
   font-weight: 600;
 `;
-
-export default Main;

@@ -8,7 +8,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
-export default function MyInfo() {
+const MyInfo = () => {
   const userObj = useUser();
 
   const [signupErrorMessage, setSignupErrorMessage] = useState();
@@ -216,7 +216,7 @@ export default function MyInfo() {
       </Snackbar>
     </Wrapper>
   );
-}
+};
 
 const Wrapper = styled.div`
   display: flex;
@@ -382,3 +382,5 @@ const Required = styled.span`
   color: ${({ theme }) => theme.color.blue};
   font-size: 22px;
 `;
+
+export default MyInfo;

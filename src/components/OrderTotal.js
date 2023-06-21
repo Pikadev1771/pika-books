@@ -8,10 +8,8 @@ import moment from 'moment';
 import { doc, setDoc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 const OrderTotal = ({ checkedBooksData, handleDelete }) => {
-  const navigate = useNavigate();
-
   const userObj = useUser();
-
+  const navigate = useNavigate();
   const shippingPrice = 0;
 
   const totalQuantity = checkedBooksData.reduce(

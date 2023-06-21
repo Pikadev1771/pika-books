@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-export default function BookCard({ book }) {
+const BookCard = ({ book }) => {
   const { id, title, author, publisher, bookImgUrl, price } = book;
   return (
     <Link to={`/book/${id}`}>
@@ -16,7 +16,7 @@ export default function BookCard({ book }) {
       </CardContainer>
     </Link>
   );
-}
+};
 
 const CardContainer = styled.button`
   ${({ theme }) => theme.flexCenter};
@@ -77,3 +77,5 @@ const Price = styled.div`
   font-size: 20px;
   font-weight: 600;
 `;
+
+export default BookCard;

@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
-const OrderConfirml = ({ userObj }) => {
+export default function OrderConfirm({ userObj }) {
   const navigate = useNavigate();
   const params = useParams();
   const [order, setOrder] = useState();
@@ -73,7 +73,7 @@ const OrderConfirml = ({ userObj }) => {
       </Wrapper>
     </>
   );
-};
+}
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flexCenter};
@@ -196,5 +196,3 @@ const SubText = styled.span`
   font-size: 20px;
   margin-right: 6px;
 `;
-
-export default OrderConfirml;

@@ -17,7 +17,7 @@ import {
 import { nanoid } from 'nanoid';
 import moment from 'moment';
 
-const Edit = () => {
+export default function Edit() {
   const navigate = useNavigate();
   const userObj = useUser();
   const params = useParams();
@@ -65,7 +65,6 @@ const Edit = () => {
     };
     reader.readAsDataURL(imgFile);
   };
-
 
   const onSubmit = async (form) => {
     const previousImgUrl = bookData.bookImgUrl;
@@ -197,7 +196,7 @@ const Edit = () => {
       </Wrapper>
     </>
   );
-};
+}
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flexCenter};
@@ -297,7 +296,6 @@ const Input = styled.input`
   :focus {
     outline: none;
   }
-
 `;
 
 const ErrorMessage = styled.span`
@@ -322,12 +320,9 @@ const SubmitBtn = styled.button`
     cursor: pointer;
     width: 600px;
   }
-
 `;
 
 const Required = styled.span`
   color: ${({ theme }) => theme.color.blue};
   font-size: 22px;
 `;
-
-export default Edit;

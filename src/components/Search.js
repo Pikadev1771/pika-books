@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { dbService } from 'booksFirebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 
-export default function Search() {
+const Search = () => {
   const navigate = useNavigate();
 
   const [bookList, setBookList] = useState([]);
@@ -66,7 +66,7 @@ export default function Search() {
       ) : null}
     </Filter>
   );
-}
+};
 
 const Filter = styled.div`
   display: flex;
@@ -166,3 +166,5 @@ const Price = styled.div`
   font-weight: 600;
   width: 100px;
 `;
+
+export default Search;

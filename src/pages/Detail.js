@@ -12,7 +12,7 @@ import useUser from 'hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 import useLogin from 'hooks/useLogin';
 
-const Detail = () => {
+export default function Detail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const params = useParams();
@@ -133,7 +133,7 @@ const Detail = () => {
       )}
     </>
   );
-};
+}
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flexCenter};
@@ -279,5 +279,3 @@ const NotFoundWrapper = styled.div`
 const NotFoundText = styled.p`
   font-size: 26px;
 `;
-
-export default Detail;

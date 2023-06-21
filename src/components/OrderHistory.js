@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { dbService } from 'booksFirebase';
 import { doc, getDoc } from 'firebase/firestore';
 
-export default function OrderHistory({ userObj }) {
+const OrderHistory = ({ userObj }) => {
   const navigate = useNavigate();
   const [orderList, setOrderList] = useState();
 
@@ -72,7 +72,7 @@ export default function OrderHistory({ userObj }) {
       </Wrapper>
     </>
   );
-}
+};
 
 const Wrapper = styled.div`
   display: flex;
@@ -207,3 +207,5 @@ const NoItemBox = styled.div`
   border: 4px solid black;
   width: 100%;
 `;
+
+export default OrderHistory;

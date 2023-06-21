@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from 'booksFirebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
-const SignupPage = () => {
+export default function SignupPage() {
   const navigate = useNavigate();
 
   const [signupErrorMessage, setSignupErrorMessage] = useState();
@@ -199,9 +199,7 @@ const SignupPage = () => {
       </SignupLayout>
     </>
   );
-};
-
-export default SignupPage;
+}
 
 const SignupLayout = styled.div`
   width: 100%;

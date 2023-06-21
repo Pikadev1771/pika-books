@@ -9,7 +9,7 @@ import OrderTotal from 'components/OrderTotal';
 import { dbService } from 'booksFirebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 
-const Cart = () => {
+export default function Cart() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -156,7 +156,7 @@ const Cart = () => {
       </Wrapper>
     </>
   );
-};
+}
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flexCenter};
@@ -229,5 +229,3 @@ const NoItemBox = styled.div`
   height: 500px;
   font-size: 22px;
 `;
-
-export default Cart;

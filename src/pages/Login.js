@@ -6,7 +6,7 @@ import { authService } from 'booksFirebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const LoginPage = () => {
+export default function LoginPage() {
   const navigate = useNavigate();
 
   const [loginErrorMessage, setLoginErrorMessage] = useState();
@@ -144,9 +144,7 @@ const LoginPage = () => {
       </LoginLayout>
     </>
   );
-};
-
-export default LoginPage;
+}
 
 const LoginLayout = styled.div`
   width: 100%;

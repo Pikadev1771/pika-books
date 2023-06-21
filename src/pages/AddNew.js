@@ -12,7 +12,7 @@ import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { nanoid } from 'nanoid';
 import moment from 'moment';
 
-const AddNew = () => {
+export default function AddNew() {
   const navigate = useNavigate();
   const userObj = useUser();
 
@@ -159,7 +159,7 @@ const AddNew = () => {
       </Wrapper>
     </>
   );
-};
+}
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flexCenter};
@@ -295,5 +295,3 @@ const Required = styled.span`
   color: ${({ theme }) => theme.color.blue};
   font-size: 22px;
 `;
-
-export default AddNew;
