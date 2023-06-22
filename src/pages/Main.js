@@ -51,7 +51,6 @@ export default function Main() {
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flexCenter};
-  flex-direction: column;
   margin: 60px auto;
   width: 80vw;
   padding: 50px;
@@ -84,11 +83,19 @@ const Title = styled.span`
 `;
 
 const List = styled.div`
-  display: flex;
+  /* display: flex;
   justify-content: left;
   align-items: center;
   align-content: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; */
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 5px;
+
+  @media screen and (max-width: 992px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;
 
 const AddBtn = styled.button`

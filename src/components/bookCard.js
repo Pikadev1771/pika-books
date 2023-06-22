@@ -20,9 +20,9 @@ const BookCard = ({ book }) => {
 
 const CardContainer = styled.button`
   ${({ theme }) => theme.flexCenter};
-  width: 530px;
+  width: 500px;
   background-color: inherit;
-  margin: 30px;
+  margin: 20px;
   border: 4px solid black;
   padding: 40px;
 `;
@@ -49,7 +49,7 @@ const Text = styled.div`
 const Title = styled.p`
   text-align: center;
   margin: 10px;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 600;
 
   text-overflow: ellipsis;
